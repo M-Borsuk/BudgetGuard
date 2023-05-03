@@ -70,6 +70,18 @@ jupyter = ["ipython (>=7.8.0)", "tokenize-rt (>=3.2.0)"]
 uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
+name = "cachetools"
+version = "5.3.0"
+description = "Extensible memoizing collections and decorators"
+category = "dev"
+optional = false
+python-versions = "~=3.7"
+files = [
+    {file = "cachetools-5.3.0-py3-none-any.whl", hash = "sha256:429e1a1e845c008ea6c85aa35d4b98b65d6a9763eeef3e37e92728a12d1de9d4"},
+    {file = "cachetools-5.3.0.tar.gz", hash = "sha256:13dfddc7b8df938c21a940dfa6557ce6e94a2f1cdfa58eb90c805721d58f2c14"},
+]
+
+[[package]]
 name = "certifi"
 version = "2022.12.7"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -91,6 +103,18 @@ python-versions = ">=3.6.1"
 files = [
     {file = "cfgv-3.3.1-py2.py3-none-any.whl", hash = "sha256:c6a0883f3917a037485059700b9e75da2464e6c27051014ad85ba6aaa5884426"},
     {file = "cfgv-3.3.1.tar.gz", hash = "sha256:f5a830efb9ce7a445376bb66ec94c638a9787422f96264c98edc6bdeed8ab736"},
+]
+
+[[package]]
+name = "chardet"
+version = "5.1.0"
+description = "Universal encoding detector for Python 3"
+category = "dev"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "chardet-5.1.0-py3-none-any.whl", hash = "sha256:362777fb014af596ad31334fde1e8c327dfdb076e1960d1694662d46a6917ab9"},
+    {file = "chardet-5.1.0.tar.gz", hash = "sha256:0d62712b956bc154f85fb0a266e2a3c5913c2967e00348701b32411d6def31e5"},
 ]
 
 [[package]]
@@ -758,14 +782,14 @@ virtualenv = ">=20.10.0"
 
 [[package]]
 name = "py4j"
-version = "0.10.9.7"
+version = "0.10.9.2"
 description = "Enables Python programs to dynamically access arbitrary Java objects"
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "py4j-0.10.9.7-py2.py3-none-any.whl", hash = "sha256:85defdfd2b2376eb3abf5ca6474b51ab7e0de341c75a02f46dc9b5976f5a5c1b"},
-    {file = "py4j-0.10.9.7.tar.gz", hash = "sha256:0b6e5315bb3ada5cf62ac651d107bb2ebc02def3dee9d9548e3baac644ea8dbb"},
+    {file = "py4j-0.10.9.2-py2.py3-none-any.whl", hash = "sha256:bf0485388e415ff26710d2dc719cb0ede16cf1164b1ee757e0ebb2e98c471521"},
+    {file = "py4j-0.10.9.2.tar.gz", hash = "sha256:624f97c363b8dd84822bc666b12fa7f7d97824632b2ff3d852cc491359ce7615"},
 ]
 
 [[package]]
@@ -793,25 +817,44 @@ files = [
 ]
 
 [[package]]
-name = "pyspark"
-version = "3.4.0"
-description = "Apache Spark Python API"
-category = "main"
+name = "pyproject-api"
+version = "1.5.1"
+description = "API to interact with the python pyproject.toml based projects"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "pyspark-3.4.0.tar.gz", hash = "sha256:167a23e11854adb37f8602de6fcc3a4f96fd5f1e323b9bb83325f38408c5aafd"},
+    {file = "pyproject_api-1.5.1-py3-none-any.whl", hash = "sha256:4698a3777c2e0f6b624f8a4599131e2a25376d90fe8d146d7ac74c67c6f97c43"},
+    {file = "pyproject_api-1.5.1.tar.gz", hash = "sha256:435f46547a9ff22cf4208ee274fca3e2869aeb062a4834adfc99a4dd64af3cf9"},
 ]
 
 [package.dependencies]
-py4j = "0.10.9.7"
+packaging = ">=23"
+tomli = {version = ">=2.0.1", markers = "python_version < \"3.11\""}
 
 [package.extras]
-connect = ["googleapis-common-protos (>=1.56.4)", "grpcio (>=1.48.1)", "grpcio-status (>=1.48.1)", "numpy (>=1.15)", "pandas (>=1.0.5)", "pyarrow (>=1.0.0)"]
-ml = ["numpy (>=1.15)"]
-mllib = ["numpy (>=1.15)"]
-pandas-on-spark = ["numpy (>=1.15)", "pandas (>=1.0.5)", "pyarrow (>=1.0.0)"]
-sql = ["numpy (>=1.15)", "pandas (>=1.0.5)", "pyarrow (>=1.0.0)"]
+docs = ["furo (>=2022.12.7)", "sphinx (>=6.1.3)", "sphinx-autodoc-typehints (>=1.22,!=1.23.4)"]
+testing = ["covdefaults (>=2.2.2)", "importlib-metadata (>=6)", "pytest (>=7.2.1)", "pytest-cov (>=4)", "pytest-mock (>=3.10)", "virtualenv (>=20.17.1)", "wheel (>=0.38.4)"]
+
+[[package]]
+name = "pyspark"
+version = "3.2.0"
+description = "Apache Spark Python API"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "pyspark-3.2.0.tar.gz", hash = "sha256:bfea06179edbfb4bc76a0f470bd3c38e12f00e1023e3ad0373558d07cff102ab"},
+]
+
+[package.dependencies]
+py4j = "0.10.9.2"
+
+[package.extras]
+ml = ["numpy (>=1.7)"]
+mllib = ["numpy (>=1.7)"]
+pandas-on-spark = ["numpy (>=1.14)", "pandas (>=0.23.2)", "pyarrow (>=1.0.0)"]
+sql = ["pandas (>=0.23.2)", "pyarrow (>=1.0.0)"]
 
 [[package]]
 name = "pytest"
@@ -1036,6 +1079,34 @@ files = [
 ]
 
 [[package]]
+name = "tox"
+version = "4.5.1"
+description = "tox is a generic virtualenv management and test command line tool"
+category = "dev"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "tox-4.5.1-py3-none-any.whl", hash = "sha256:d25a2e6cb261adc489604fafd76cd689efeadfa79709965e965668d6d3f63046"},
+    {file = "tox-4.5.1.tar.gz", hash = "sha256:5a2eac5fb816779dfdf5cb00fecbc27eb0524e4626626bb1de84747b24cacc56"},
+]
+
+[package.dependencies]
+cachetools = ">=5.3"
+chardet = ">=5.1"
+colorama = ">=0.4.6"
+filelock = ">=3.11"
+packaging = ">=23.1"
+platformdirs = ">=3.2"
+pluggy = ">=1"
+pyproject-api = ">=1.5.1"
+tomli = {version = ">=2.0.1", markers = "python_version < \"3.11\""}
+virtualenv = ">=20.21"
+
+[package.extras]
+docs = ["furo (>=2023.3.27)", "sphinx (>=6.1.3)", "sphinx-argparse-cli (>=1.11)", "sphinx-autodoc-typehints (>=1.23,!=1.23.4)", "sphinx-copybutton (>=0.5.2)", "sphinx-inline-tabs (>=2022.1.2b11)", "sphinxcontrib-towncrier (>=0.2.1a0)", "towncrier (>=22.12)"]
+testing = ["build[virtualenv] (>=0.10)", "covdefaults (>=2.3)", "devpi-process (>=0.3)", "diff-cover (>=7.5)", "distlib (>=0.3.6)", "flaky (>=3.7)", "hatch-vcs (>=0.3)", "hatchling (>=1.14)", "psutil (>=5.9.4)", "pytest (>=7.3.1)", "pytest-cov (>=4)", "pytest-mock (>=3.10)", "pytest-xdist (>=3.2.1)", "re-assert (>=1.1)", "time-machine (>=2.9)", "wheel (>=0.40)"]
+
+[[package]]
 name = "typing-extensions"
 version = "4.5.0"
 description = "Backported and Experimental Type Hints for Python 3.7+"
@@ -1144,4 +1215,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8.8"
-content-hash = "8707aff5ba35722296c99a4e30d1f9e4621a105dd972b29beefa107f82faaefe"
+content-hash = "14c0824f2848083124c700f3e3beb84803d8e8cb4e3338c5b1ee70575db1f1af"

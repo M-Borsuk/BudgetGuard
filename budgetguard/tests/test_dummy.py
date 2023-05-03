@@ -1,5 +1,6 @@
-from conftest import SparkETLTestCase
+from . import SparkETLTestCase
 import pyspark.sql.types as T
+from budgetguard.budgetguard.pipelines.base import NAME
 
 
 class TestDummy(SparkETLTestCase):
@@ -24,3 +25,4 @@ class TestDummy(SparkETLTestCase):
             data=input_data, schema=input_schema
         )
         input_df.collect()
+        assert NAME == "budgetguard"
