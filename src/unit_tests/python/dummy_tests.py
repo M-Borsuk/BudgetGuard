@@ -1,5 +1,7 @@
-from budgetguard.base import NAME
+from src.main.budget_guard.base import NAME
+from conftest import SparkETLTestCase
 
 
-def test_base():
-    assert NAME == "budgetguard"
+class TestDummy(SparkETLTestCase):
+    def test_base():
+        assert NAME == "budgetguard"

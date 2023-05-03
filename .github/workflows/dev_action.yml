@@ -14,4 +14,5 @@ jobs:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
       - run: pip install -r requirements-dev.txt
+      - run: black ./
       - uses: pybuilder/build@master
