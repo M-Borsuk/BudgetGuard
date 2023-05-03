@@ -1,18 +1,18 @@
-name: "Development github actions (CI/CD)"
-on:
-  push:
-    branches:
-      - main
-jobs:
-  dev-release:
-    name: "Dev release"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          python-version: '3.9'
-          cache: 'pip' # caching pip dependencies
-      - run: pip install -r requirements-dev.txt
-      - run: black ./
-      - uses: pybuilder/build@master
+# name: "Development github actions (CI/CD)"
+# on:
+#   push:
+#     branches:
+#       - main
+# jobs:
+#   dev-release:
+#     name: "Dev release"
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v3
+#       - uses: actions/setup-python@v4
+#         with:
+#           python-version: '3.9'
+#           cache: 'pip' # caching pip dependencies
+#       - run: pip install pybuilder
+#       - run: black -l 79 ./
+#       - uses: pybuilder/build@master
