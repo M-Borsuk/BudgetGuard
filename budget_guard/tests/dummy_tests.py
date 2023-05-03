@@ -1,16 +1,15 @@
 from conftest import SparkETLTestCase
-from pyspark.sql.types import *
+import pyspark.sql.types as T
 
 
 class TestDummy(SparkETLTestCase):
     def test_base(self):
-        # 1. Prepare an input data frame that mimics our source data.
-        input_schema = StructType(
+        input_schema = T.StructType(
             [
-                StructField("StoreID", IntegerType(), True),
-                StructField("Location", StringType(), True),
-                StructField("Date", StringType(), True),
-                StructField("ItemCount", IntegerType(), True),
+                T.StructField("StoreID", T.IntegerType(), True),
+                T.StructField("Location", T.StringType(), True),
+                T.StructField("Date", T.StringType(), True),
+                T.StructField("ItemCount", T.IntegerType(), True),
             ]
         )
         input_data = [
