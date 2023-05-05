@@ -46,7 +46,7 @@ jobs:
         uses: FragileTech/bump-version@main
         with:
             current_version: "${{ env.VERSION }}"
-            files: [VERSION, pyproject.toml]
+            files: VERSION
             commit_name: "GithubActionsBot -> Version bump (CI/CD)"
             commit_email: "actions@github.com"
             login: "GitHubActionsBot"
