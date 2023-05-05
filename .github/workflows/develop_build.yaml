@@ -47,6 +47,7 @@ jobs:
       - name: Bump version in pyproject.toml
         run: |
           bump2version --allow-dirty --new-version ${{ env.VERSION }} patch pyproject.toml
+          bump2version --allow-dirty --new-version ${{ env.VERSION }} patch VERSION
   
       - name: Commit version bump
         run: |
