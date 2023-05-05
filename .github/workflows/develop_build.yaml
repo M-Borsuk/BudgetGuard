@@ -27,7 +27,7 @@ jobs:
 
       - name: Read version number
         run: |
-              echo "VERSION::$(cat VERSION)" >> $VERSION_ENV
+              echo "VERSION=$(cat VERSION)" >> $VERSION_ENV
 
       - name: Run tox
         run: tox
