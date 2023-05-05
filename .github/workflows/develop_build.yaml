@@ -33,14 +33,12 @@ jobs:
           echo "VERSION=$(cat VERSION)" >> $GITHUB_ENV
           VERSION=${{ env.VERSION }}
           VERSION=$(bump2version --list patch --dry-run --allow-dirty | awk -F= '/new_version=/ { print $2 }')
-          echo $VERSION > VERSION
           echo "VERSION=$(cat VERSION)" >> $GITHUB_ENV
   
       - name: Bump version in pyproject.toml and __init__.py
         run: |
-          VERSION=${{ env.VERSION }}
-          bump2version --allow-dirty --new-version $VERSION patch pyproject.toml
-          bump2version --allow-dirty --new-version $VERSION patch budgetguard/__init__.py
+          bump2version --allow-dirty --new-version ${{ env.VERSION }} patch pyproject.toml
+          bump2version --allow-dirty --new-version ${{ env.VERSION }} patch budgetguard/__init__.py
   
       - name: Commit version bump
         run: |
