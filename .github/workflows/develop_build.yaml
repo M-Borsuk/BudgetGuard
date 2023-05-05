@@ -43,11 +43,11 @@ jobs:
           VERSION=$(bump2version --list patch --dry-run --allow-dirty | awk -F= '/new_version=/ { print $2 }')
           echo $VERSION
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
+          bump2version --allow-dirty --new-version ${{ env.VERSION }} patch VERSION
   
       - name: Bump version in pyproject.toml
         run: |
           bump2version --allow-dirty --new-version ${{ env.VERSION }} patch pyproject.toml
-          bump2version --allow-dirty --new-version ${{ env.VERSION }} patch VERSION
   
       - name: Commit version bump
         run: |
