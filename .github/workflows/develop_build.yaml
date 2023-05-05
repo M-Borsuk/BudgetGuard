@@ -5,6 +5,11 @@ on:
     branches:
       - 'develop'
 
+
+env:
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    PAT: ${{ secrets.PAT }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -12,6 +17,9 @@ jobs:
     steps:
       - name: Checkout sources
         uses: actions/checkout@v2
+        with:
+            ref: ${{ github.ref }}
+            token: ${{ env.PAT }}
 
       - name: Setup Python
         uses: actions/setup-python@v2
@@ -45,7 +53,12 @@ jobs:
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
           git commit -a -m "Bump version to ${{ env.VERSION }} [skip ci]"
-          git push
+
+      - name: Push changes to protected branch
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ env.GITHUB_TOKEN }}
+          branch: develop
     
       - name: Create Release
         id: create_release
