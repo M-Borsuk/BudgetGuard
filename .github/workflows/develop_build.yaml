@@ -33,13 +33,13 @@ jobs:
   
       - name: Bump version in VERSION file
         run: |
-          VERSION=${{ env.GITHUB_ENV }}
+          VERSION=${{ env.VERSION }}
           VERSION=$(bump2version --list patch --dry-run --allow-dirty | awk -F= '/new_version=/ { print $2 }')
           echo $VERSION > VERSION
   
       - name: Bump version in pyproject.toml and __init__.py
         run: |
-          VERSION=${{ env.GITHUB_ENV }}
+          VERSION=${{ env.VERSION }}
           bump2version --allow-dirty --new-version $VERSION patch pyproject.toml
           bump2version --allow-dirty --new-version $VERSION patch budgetguard/__init__.py
   
@@ -47,7 +47,7 @@ jobs:
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
-          git commit -a -m "Bump version to ${{ env.GITHUB_ENV }} [skip ci]"
+          git commit -a -m "Bump version to ${{ env.VERSION }} [skip ci]"
           git push
     
       - name: Create Release
@@ -56,8 +56,8 @@ jobs:
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-            tag_name: v${{ env.GITHUB_ENV }}
-            release_name: Release v${{ env.GITHUB_ENV }}
+            tag_name: v${{ env.VERSION }}
+            release_name: Release v${{ env.VERSION }}
             draft: false
             prerelease: false
           
