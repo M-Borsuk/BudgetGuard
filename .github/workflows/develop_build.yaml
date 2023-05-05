@@ -8,9 +8,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.8", "3.9", "3.10"]
 
     steps:
       - name: Checkout sources
@@ -19,7 +16,8 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.8"
+          
       - name: Install poetry and dependencies
         run: |
           python -m pip install --upgrade pip
@@ -29,7 +27,19 @@ jobs:
       - name: Run tox
         run: tox
     
-      - name: Bump patch version number
+      - name: Install bump2version
+        run: pip install bump2version
+  
+      - name: Bump version
         run: |
-            poetry self add poetry-bumpversion
-            poetry version patch
+          # Bump version in pyproject.toml
+          bump2version patch pyproject.toml
+          # Bump version in __init__.py
+          bump2version patch package/__init__.py
+  
+      - name: Commit version bump
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+          git commit -a -m "Bump version [skip ci]"
+          git push
