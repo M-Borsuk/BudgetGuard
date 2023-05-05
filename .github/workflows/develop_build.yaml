@@ -33,8 +33,8 @@ jobs:
           echo "VERSION=$(cat VERSION)" >> $GITHUB_ENV
           VERSION=${{ env.VERSION }}
           VERSION=$(bump2version --list patch --dry-run --allow-dirty | awk -F= '/new_version=/ { print $2 }')
-          echo VERSION
-          echo "VERSION" >> $GITHUB_ENV
+          echo $VERSION
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
   
       - name: Bump version in pyproject.toml and __init__.py
         run: |
