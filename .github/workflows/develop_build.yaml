@@ -25,22 +25,21 @@ jobs:
           python -m pip install poetry
           python -m pip install bump2version
 
-      - name: Read version number
-        run: |
-              echo "VERSION=$(cat VERSION)" >> $VERSION_ENV
+      - name: Read version from VERSION file
+        run: echo "VERSION=$(cat VERSION)" >> $GITHUB_ENV
 
       - name: Run tox
         run: tox
   
       - name: Bump version in VERSION file
         run: |
-          VERSION=${{ env.VERSION_ENV }}
+          VERSION=${{ env.VERSION }}
           VERSION=$(bump2version --list patch --dry-run --allow-dirty | awk -F= '/new_version=/ { print $2 }')
           echo $VERSION > VERSION
   
       - name: Bump version in pyproject.toml and __init__.py
         run: |
-          VERSION=${{ env.VERSION_ENV }}
+          VERSION=${{ env.VERSION }}
           bump2version --allow-dirty --new-version $VERSION patch pyproject.toml
           bump2version --allow-dirty --new-version $VERSION patch budgetguard/__init__.py
   
@@ -48,7 +47,7 @@ jobs:
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
-          git commit -a -m "Bump version to ${{ env.VERSION_ENV }} [skip ci]"
+          git commit -a -m "Bump version to ${{ env.VERSION }} [skip ci]"
           git push
     
       - name: Create Release
