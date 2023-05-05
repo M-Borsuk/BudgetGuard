@@ -36,18 +36,22 @@ jobs:
   
       - name: Get current version from VERSION file
         run: |
-          echo "VERSION=$(cat VERSION)" >> $GITHUB_ENV
+            VERSION=$(bump2version --list patch --dry-run --allow-dirty | awk -F= '/new_version=/ { print $2 }')
+            echo $VERSION
+            echo "VERSION=${VERSION}" >> $GITHUB_ENV
   
-      - name: Bump code version (patch)
-        uses: FragileTech/bump-version@main
+      - name: Bump version and push tag
+        uses: jaumann/github-bumpversion-action@v0.0.7
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            NEW_VERSION: ${{ env.VERSION }}
+            DEFAULT_BUMP: patch
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
         with:
-            current_version: "${{ env.VERSION }}"
-            files: pyproject.toml
-            commit_name: "GithubActionsBot -> Version bump (CI/CD)"
-            commit_email: "actions@github.com"
-            login: "GitHubActionsBot"
-            token: "${{ secrets.PAT }}"
-            part: patch
+            github_token: ${{ secrets.GITHUB_TOKEN }}
+            tags: true
     
       - name: Create Release
         id: create_release
