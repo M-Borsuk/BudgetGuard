@@ -34,18 +34,31 @@ jobs:
       - name: Run tox
         run: tox
   
-      - name: Get current version from VERSION file
+      - name: Get current version and new version from VERSION file
         run: |
-            VERSION=$(bump2version --list patch --dry-run --allow-dirty | awk -F= '/new_version=/ { print $2 }')
-            echo $VERSION
-            echo "VERSION=${VERSION}" >> $GITHUB_ENV
-  
-      - name: Bump version and push tag
-        uses: jaumann/github-bumpversion-action@v0.0.7
-        env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            NEW_VERSION: ${{ env.VERSION }}
-            DEFAULT_BUMP: patch
+            RAW_OUTPUT=$(bumpversion --list patch --dry-run)
+            OLD_VERSION=$(echo "$RAW_OUTPUT" | grep -o 'current_version=\S*' | cut -d= -f2)
+            NEW_VERSION=$(echo "$RAW_OUTPUT" | grep -o 'new_version=\S*' | cut -d= -f2)
+            echo "Current Version: $OLD_VERSION"
+            echo "New Version: $NEW_VERSION"
+            echo "NEW_VERSION=${NEW_VERSION}" >> $GITHUB_ENV
+            echo "OLD_VERSION=${OLD_VERSION}" >> $GITHUB_ENV
+
+      - name: Bump version in pyproject.toml
+        run: |
+            bump2version patch --allow-dirty --new-version ${{ env.NEW_VERSION }} --verbose
+      
+      - name: Commit version bump
+        run: |
+            git config --local user.email "actions@github.com"
+            git config --local user.name "GitHub Actions"
+            git commit -a -m "✅ Bump version from ${{ env.OLD_VERSION }} to ${{ env.NEW_VERSION }} by Github Actions Bot 🤖"
+
+      - name: Push changes to protected branch
+        uses: ad-m/github-push-action@master
+        with:
+            github_token: ${{ env.GITHUB_TOKEN }}
+            branch: develop
 
       - name: Push changes
         uses: ad-m/github-push-action@master
@@ -59,8 +72,8 @@ jobs:
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-            tag_name: v${{ env.VERSION }}
-            release_name: Release v${{ env.VERSION }}
+            tag_name: v${{ env.NEW_VERSION }}
+            release_name: Release v${{ env.NEW_VERSION }}
             draft: false
             prerelease: false
           
