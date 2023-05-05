@@ -25,6 +25,10 @@ jobs:
           python -m pip install poetry
           python -m pip install bump2version
 
+      - name: Read version number
+        run: |
+              echo "::set-env name=VERSION::$(cat VERSION)"
+
       - name: Run tox
         run: tox
   
