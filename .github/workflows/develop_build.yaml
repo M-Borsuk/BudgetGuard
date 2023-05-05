@@ -27,20 +27,20 @@ jobs:
 
       - name: Read version number
         run: |
-              echo "::set-env name=VERSION::$(cat VERSION)"
+              echo "VERSION::$(cat VERSION)" >> $VERSION_ENV
 
       - name: Run tox
         run: tox
   
       - name: Bump version in VERSION file
         run: |
-          VERSION=${{ env.VERSION }}
+          VERSION=${{ env.VERSION_ENV }}
           VERSION=$(bump2version --list patch --dry-run --allow-dirty | awk -F= '/new_version=/ { print $2 }')
           echo $VERSION > VERSION
   
       - name: Bump version in pyproject.toml and __init__.py
         run: |
-          VERSION=${{ env.VERSION }}
+          VERSION=${{ env.VERSION_ENV }}
           bump2version --allow-dirty --new-version $VERSION patch pyproject.toml
           bump2version --allow-dirty --new-version $VERSION patch budgetguard/__init__.py
   
@@ -48,7 +48,7 @@ jobs:
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
-          git commit -a -m "Bump version to ${{ env.VERSION }} [skip ci]"
+          git commit -a -m "Bump version to ${{ env.VERSION_ENV }} [skip ci]"
           git push
     
       - name: Create Release
