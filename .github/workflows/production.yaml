@@ -58,7 +58,7 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
             github_token: ${{ env.GITHUB_TOKEN }}
-            branch: develop
+            branch: production
 
       - name: Push changes
         uses: ad-m/github-push-action@master
