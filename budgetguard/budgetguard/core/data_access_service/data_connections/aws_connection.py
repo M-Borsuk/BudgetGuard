@@ -1,10 +1,27 @@
 import boto3
 from botocore.exceptions import ClientError
-from base_connection import BaseConnection
+from .connection import Connection
+import os
 
 
-class AWSConnection(BaseConnection):
-    def get_aws_secret(self, secret_name: str, region_name: str = "us-east-1"):
+class AWSConnection(Connection):
+    def __init__(self) -> None:
+        self.session: boto3.session.Session = self.connect()
+
+    def connect(self) -> boto3.session.Session:
+        """
+        Base method for connecting to the data source.
+
+        :return: The session object.
+        """
+        session = boto3.session.Session(
+            aws_access_key_id=os.environ.get("AWS_ACCESS_KEY_ID"),
+            aws_secret_access_key=os.environ.get("AWS_SECRET_ACCESS_KEY"),
+            region_name=os.environ.get("AWS_REGION_NAME"),
+        )
+        return session
+
+    def get_aws_secret(self, secret_name: str) -> str:
         """
         Method to retrieve a secret from AWS Secrets Manager.
 
@@ -12,9 +29,9 @@ class AWSConnection(BaseConnection):
 
         :return: The secret value.
         """
-        session = boto3.session.Session()
-        client = session.client(
-            service_name="secretsmanager", region_name=region_name
+        client: boto3.client = self.session.client(
+            service_name="secretsmanager",
+            region_name=os.environ.get("AWS_REGION_NAME"),
         )
 
         try:
@@ -24,6 +41,5 @@ class AWSConnection(BaseConnection):
         except ClientError as e:
             raise e
 
-        # Decrypts secret using the associated KMS key.
         secret = get_secret_value_response["SecretString"]
         return secret

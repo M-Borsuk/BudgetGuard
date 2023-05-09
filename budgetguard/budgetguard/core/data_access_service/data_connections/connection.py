@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 import requests
 
 
-class BaseConnection(ABC):
+class Connection(ABC):
     @abstractmethod
     def connect(self):
         """
@@ -17,7 +17,7 @@ class BaseConnection(ABC):
         params: dict = None,
         data: dict = None,
         headers: dict = None,
-    ):
+    ) -> requests.Response:
         """
         Method to make a request to a given url.
 
