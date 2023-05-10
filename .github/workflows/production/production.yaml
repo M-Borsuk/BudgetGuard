@@ -45,9 +45,9 @@ jobs:
             echo "NEW_VERSION=${NEW_VERSION}" >> $GITHUB_ENV
             echo "OLD_VERSION=${OLD_VERSION}" >> $GITHUB_ENV
 
-      - name: Bump version in pyproject.toml
+      - name: Bump version
         run: |
-            bump2version minor --allow-dirty --new-version ${{ env.NEW_VERSION }} --verbose
+            bump2version minor --allow-dirty --new-version ${{ env.NEW_VERSION }} --verbose --config-file .bumpversion_prod.cfg
       
       - name: Commit version bump
         run: |
