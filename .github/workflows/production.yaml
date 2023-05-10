@@ -84,6 +84,11 @@ jobs:
       - name: Build and publish
         run: poetry publish --build
       
+      - name: Sleep for 2 minutes (waiting for PyPI to update)
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '120s'
+      
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
