@@ -2,6 +2,7 @@ import boto3
 from botocore.exceptions import ClientError
 from .connection import Connection
 import os
+from loguru import logger
 
 
 class AWSConnection(Connection):
@@ -14,6 +15,7 @@ class AWSConnection(Connection):
 
         :return: The session object.
         """
+        logger.info("Connecting to AWS session...")
         session = boto3.session.Session(
             aws_access_key_id=os.environ.get("AWS_ACCESS_KEY_ID"),
             aws_secret_access_key=os.environ.get("AWS_SECRET_ACCESS_KEY"),
@@ -33,7 +35,9 @@ class AWSConnection(Connection):
             service_name="secretsmanager",
             region_name=os.environ.get("AWS_REGION_NAME"),
         )
-
+        logger.info(
+            f"Retrieving secret {secret_name} from AWS Secrets Manager..."
+        )
         try:
             get_secret_value_response = client.get_secret_value(
                 SecretId=secret_name

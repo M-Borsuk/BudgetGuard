@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import requests
+from loguru import logger
 
 
 class Connection(ABC):
@@ -29,6 +30,7 @@ class Connection(ABC):
 
         :return: The response object.
         """
+        logger.info(f"Making {method} request to {url}...")
         try:
             response = requests.request(
                 method=method,
@@ -40,4 +42,5 @@ class Connection(ABC):
             response.raise_for_status()
             return response
         except requests.exceptions.HTTPError as e:
+            logger.error(f"Error making request to {url}: {e}")
             raise e
