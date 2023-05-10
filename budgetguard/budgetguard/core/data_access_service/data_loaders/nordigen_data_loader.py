@@ -1,5 +1,6 @@
 from .data_loader import DataLoader
 from ..data_connections import connect
+from loguru import logger
 
 
 class NordigenDataLoader(DataLoader):
@@ -16,6 +17,7 @@ class NordigenDataLoader(DataLoader):
         """
         Method for reading data from the Nordigen API.
         """
+        logger.info("Reading data from Nordigen...")
         output = {}
         for account in self.accounts:
             meta_data = account.get_metadata()
@@ -28,6 +30,7 @@ class NordigenDataLoader(DataLoader):
                 "transactions": transactions,
                 "meta_data": meta_data,
             }
+        logger.info("Finished reading {0} accounts data!".format(len(output)))
         return output
 
     def write(self):

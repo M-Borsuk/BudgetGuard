@@ -5,6 +5,7 @@ from nordigen.api import AccountApi
 import json
 import os
 from typing import List, Dict
+from loguru import logger
 
 
 class NordigenConnection(Connection):
@@ -17,12 +18,14 @@ class NordigenConnection(Connection):
         self.accounts: List[AccountApi] = self.connect()
 
     def connect(self) -> List[AccountApi]:
+        logger.info("Connecting to Nordigen...")
         client = NordigenClient(
             secret_id=self.nordigen_json_credentials["secret_id"],
             secret_key=self.nordigen_json_credentials["secret_key"],
             timeout=99999,
         )
         _ = client.generate_token()  # noqa
+        logger.info("Retrieving accounts from Nordigen...")
         accounts = client.requisition.get_requisition_by_id(
             requisition_id=self.nordigen_json_credentials["requisition_id"]
         )
