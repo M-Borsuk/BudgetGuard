@@ -37,7 +37,7 @@ jobs:
   
       - name: Get current version and new version from VERSION file
         run: |
-            RAW_OUTPUT=$(bumpversion --list patch --dry-run)
+            RAW_OUTPUT=$(bumpversion --list patch --dry-run --config-file .bumpversion_dev.cfg)
             OLD_VERSION=$(echo "$RAW_OUTPUT" | grep -o 'current_version=\S*' | cut -d= -f2)
             NEW_VERSION=$(echo "$RAW_OUTPUT" | grep -o 'new_version=\S*' | cut -d= -f2)
             echo "Current Version: $OLD_VERSION"
