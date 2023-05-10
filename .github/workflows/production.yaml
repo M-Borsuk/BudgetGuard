@@ -37,7 +37,7 @@ jobs:
   
       - name: Get current version and new version from VERSION file
         run: |
-            RAW_OUTPUT=$(bumpversion --list minor --dry-run --config-file .bumpversion_prod.cfg)
+            RAW_OUTPUT=$(bumpversion --list minor --dry-run)
             OLD_VERSION=$(echo "$RAW_OUTPUT" | grep -o 'current_version=\S*' | cut -d= -f2)
             NEW_VERSION=$(echo "$RAW_OUTPUT" | grep -o 'new_version=\S*' | cut -d= -f2)
             echo "Current Version: $OLD_VERSION"
@@ -47,7 +47,7 @@ jobs:
 
       - name: Bump version
         run: |
-            bump2version minor --allow-dirty --new-version ${{ env.NEW_VERSION }} --verbose --config-file .bumpversion_prod.cfg
+            bump2version minor --allow-dirty --new-version ${{ env.NEW_VERSION }} --verbose
       
       - name: Update requirements.txt for release
         run: |
@@ -100,5 +100,5 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: budget-guard
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:${{ env.NEW_VERSION }} .
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:${{ env.NEW_VERSION }} --build-arg VERSION=${{ env.NEW_VERSION }} .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{ env.NEW_VERSION }}
