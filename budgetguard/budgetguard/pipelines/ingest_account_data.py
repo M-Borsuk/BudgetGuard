@@ -30,7 +30,7 @@ class IngestAccountData(Pipeline):
         """
         Reads the data from the data sources.
         """
-        nordigen_raw_data = self.input_loader.read()
+        nordigen_raw_data = self.input_loader.read(self.partition_id)
         return nordigen_raw_data
 
     def write_sources(self, nordigen_data):

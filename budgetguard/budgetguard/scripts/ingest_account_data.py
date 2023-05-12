@@ -10,7 +10,6 @@ from pipelines.ingest_account_data import IngestAccountData  # noqa: E402
 
 parser = argparse.ArgumentParser()
 
-# add an argument to the parser
 parser.add_argument(
     "-pid",
     "--partition-id",
@@ -21,5 +20,5 @@ parser.add_argument(
 
 if __name__ == "__main__":
     args = parser.parse_args()
-    i = IngestAccountData(args.partition_id)
-    i.run()
+    pipeline = IngestAccountData(args.partition_id)
+    pipeline.run()
