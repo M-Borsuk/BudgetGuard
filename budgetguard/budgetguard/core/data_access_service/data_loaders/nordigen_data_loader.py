@@ -28,7 +28,7 @@ class NordigenDataLoader(DataLoader):
                 "details": details,
                 "balances": balances,
                 "transactions": transactions,
-                "meta_data": meta_data,
+                "metadata": meta_data,
             }
         logger.info("Finished reading {0} accounts data!".format(len(output)))
         return output
