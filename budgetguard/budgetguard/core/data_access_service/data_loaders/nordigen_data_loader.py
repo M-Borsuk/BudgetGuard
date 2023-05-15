@@ -1,7 +1,8 @@
 from .data_loader import DataLoader
-from ..data_connections import connect
+from ..data_connections import connect, NordigenConnection
 from loguru import logger
 from datetime import datetime
+from tqdm import tqdm
 
 
 class NordigenDataLoader(DataLoader):
@@ -11,7 +12,7 @@ class NordigenDataLoader(DataLoader):
         """
         Constructor for NordigenDataLoader class.
         """
-        self.nordigen_connection = connect(self.NAME)
+        self.nordigen_connection: NordigenConnection = connect(self.NAME)
         self.accounts = self.nordigen_connection.accounts
 
     def read(self, partition_id: str = None):
@@ -21,8 +22,12 @@ class NordigenDataLoader(DataLoader):
         logger.info("Reading data from Nordigen...")
         output = {}
         partition_id = self._format_partition_id_for_transactions(partition_id)
-        for account in self.accounts:
+        pbar = tqdm(self.accounts, desc="Reading accounts data...")
+        for account in pbar:
             meta_data = account.get_metadata()
+            pbar.set_description(
+                "Reading data for account {0}...".format(meta_data["id"])
+            )
             details = account.get_details()
             balances = account.get_balances()
             transactions = account.get_transactions(date_from=partition_id)
