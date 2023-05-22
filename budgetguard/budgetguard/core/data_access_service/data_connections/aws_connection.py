@@ -7,7 +7,7 @@ from loguru import logger
 
 class AWSConnection(Connection):
     def __init__(self) -> None:
-        self.session: boto3.session.Session = self.connect()
+        self.session: boto3.session.Session = AWSConnection.connect(self)
 
     def connect(self) -> boto3.session.Session:
         """
@@ -33,10 +33,9 @@ class AWSConnection(Connection):
         """
         client: boto3.client = self.session.client(
             service_name="secretsmanager",
-            region_name=os.environ.get("AWS_REGION_NAME"),
         )
         logger.info(
-            f"Retrieving secret {secret_name} from AWS Secrets Manager..."
+            f"Retrieving secret {secret_name} from AWS Secrets Manager..."  # noqa
         )
         try:
             get_secret_value_response = client.get_secret_value(
