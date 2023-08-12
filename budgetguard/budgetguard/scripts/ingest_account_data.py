@@ -1,6 +1,7 @@
 import argparse
 import sys
 import os
+from dotenv import load_dotenv
 
 here = os.path.dirname(__file__)
 
@@ -20,5 +21,6 @@ parser.add_argument(
 
 if __name__ == "__main__":
     args = parser.parse_args()
+    load_dotenv()
     pipeline = IngestAccountData(args.partition_id)
     pipeline.run()
