@@ -1,4 +1,3 @@
-import os
 from loguru import logger
 import boto3
 import json
@@ -9,9 +8,12 @@ from typing import Dict
 def lambda_handler(event, context):
     source_bucket = event["Records"][0]["s3"]["bucket"]["name"]
     source_key = event["Records"][0]["s3"]["object"]["key"]
-    formatter = Formatter(event.get("data_type"))
-    destination_bucket = os.environ["DESTINATION_BUCKET"]
-    destination_key = os.environ["DESTINATION_KEY"]
+    partition_id = re.search(r"partition_id=(\d+)", source_key).group(1)
+    account_id = re.search(r"account_id=([a-zA-Z0-9-]+)", source_key).group(1)
+    data_type = source_key.split("/")[0]
+    formatter = Formatter(data_type)
+    destination_bucket = "budgetguard-guard-bronze"
+    destination_key = f"{data_type}/partition_id={partition_id}/account_id={account_id}/{source_key.split('/')[-1]}"  # noqa
     data = s3_read_json(source_bucket, source_key)
     data = formatter(data)
     s3_write_json(data, destination_bucket, destination_key)
