@@ -30,7 +30,9 @@ class NordigenDataLoader(DataLoader):
             )
             details = account.get_details()
             balances = account.get_balances()
-            transactions = account.get_transactions(date_from=partition_id)
+            transactions = account.get_transactions(
+                date_from=partition_id, date_to=partition_id
+            )
             output[meta_data["id"]] = {
                 "details": details,
                 "balances": balances,
