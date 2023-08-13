@@ -2,20 +2,18 @@ from loguru import logger
 import boto3
 import json
 import re
-from typing import Dict
+from typing import Dict, Tuple
+import urllib
 
 
 def lambda_handler(event, context):
-    source_bucket = event["Records"][0]["s3"]["bucket"]["name"]
-    source_key = event["Records"][0]["s3"]["object"]["key"]
-    partition_id = re.search(r"partition_id=(\d+)", source_key).group(1)
-    account_id = re.search(r"account_id=([a-zA-Z0-9-]+)", source_key).group(1)
-    data_type = source_key.split("/")[0]
-    logger.info(
-        "Received event from {0} for {1} data in partition {2} for account {3}.".format(  # noqa
-            source_bucket, data_type, partition_id, account_id
-        )
-    )
+    (
+        source_bucket,
+        source_key,
+        partition_id,
+        account_id,
+        data_type,
+    ) = get_ingestion_details(event)
     formatter = Formatter(data_type)
     destination_bucket = "budget-guard-bronze"
     destination_key = f"{data_type}/partition_id={partition_id}/account_id={account_id}/{source_key.split('/')[-1]}"  # noqa
@@ -27,6 +25,30 @@ def lambda_handler(event, context):
             source_bucket, destination_bucket
         )
     )
+
+
+def get_ingestion_details(event: Dict) -> Tuple[str, str, str, str, str]:
+    """
+    Method for getting the details of the ingestion event.
+    """
+
+    source_bucket = event["Records"][0]["s3"]["bucket"]["name"]
+    source_key = urllib.parse.unquote(
+        event["Records"][0]["s3"]["object"]["key"]
+    )
+    logger.info(
+        "Received event from {0} for {1}.".format(source_bucket, source_key)
+    )  # noqa
+    partition_id = re.search(r"partition_id=(\d+)", source_key).group(1)
+    account_id = re.search(r"account_id=([a-zA-Z0-9-]+)", source_key).group(1)
+    data_type = source_key.split("/")[0]
+    logger.info(
+        "Received event from {0} for {1} data in partition {2} for account {3}.".format(  # noqa
+            source_bucket, data_type, partition_id, account_id
+        )
+    )
+
+    return source_bucket, source_key, partition_id, account_id, data_type
 
 
 def s3_read_json(source_bucket: str, source_key: str) -> Dict:
