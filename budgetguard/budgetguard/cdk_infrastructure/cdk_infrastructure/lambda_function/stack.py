@@ -2,7 +2,6 @@ from aws_cdk import Stack
 from aws_cdk import aws_lambda as _lambda
 from aws_cdk import aws_ecr as _ecr
 from aws_cdk import Aws, Duration
-import typing
 from constructs import Construct
 
 
@@ -17,13 +16,18 @@ class IngestionLambdaStack(Stack):
         ecr_repository = _ecr.Repository.from_repository_attributes(
             self,
             id="ECR",
-            repository_arn="arn:aws:ecr:{0}:{1}".format(
+            repository_arn="arn:aws:ecr:{0}:{1}:repository".format(
                 Aws.REGION, Aws.ACCOUNT_ID
             ),
             repository_name=image_name,
         )
-        ecr_image = typing.cast(
-            "_lambda.Code", _lambda.EcrImageCode(repository=ecr_repository)
+        ecr_image = _lambda.DockerImageCode.from_ecr(
+            repository=ecr_repository,
+            tag="0.11.0",
+            cmd=[
+                "budgetguard.cdk_infrastructure.lambda_function.core.lambda_handler"  # noqa
+            ],
+            entrypoint=["python", "-m", "awslambdaric"],
         )
         return ecr_image
 
@@ -35,6 +39,4 @@ class IngestionLambdaStack(Stack):
             code=lambda_image,
             timeout=Duration.seconds(300),
             memory_size=1024,
-            handler=_lambda.Handler.FROM_IMAGE,
-            runtime=_lambda.Runtime.FROM_IMAGE,
         )
