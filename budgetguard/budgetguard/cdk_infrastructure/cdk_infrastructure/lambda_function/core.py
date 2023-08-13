@@ -11,8 +11,13 @@ def lambda_handler(event, context):
     partition_id = re.search(r"partition_id=(\d+)", source_key).group(1)
     account_id = re.search(r"account_id=([a-zA-Z0-9-]+)", source_key).group(1)
     data_type = source_key.split("/")[0]
+    logger.info(
+        "Received event from {0} for {1} data in partition {2} for account {3}.".format(  # noqa
+            source_bucket, data_type, partition_id, account_id
+        )
+    )
     formatter = Formatter(data_type)
-    destination_bucket = "budgetguard-guard-bronze"
+    destination_bucket = "budget-guard-bronze"
     destination_key = f"{data_type}/partition_id={partition_id}/account_id={account_id}/{source_key.split('/')[-1]}"  # noqa
     data = s3_read_json(source_bucket, source_key)
     data = formatter(data)
@@ -36,14 +41,8 @@ def s3_read_json(source_bucket: str, source_key: str) -> Dict:
         logger.info("Reading JSON data from {0}...".format(source_bucket))
         response = s3.get_object(Bucket=source_bucket, Key=source_key)
         json_data = response["Body"].read().decode("utf-8")
-
-        # Parse the JSON data
         parsed_data = json.loads(json_data)
-
-        # Convert the parsed data back to JSON format
-        json_output = json.dumps(parsed_data)
-
-        return json_output
+        return parsed_data
 
     except Exception as e:
         print("Error: {}".format(str(e)))
@@ -61,7 +60,7 @@ def s3_write_json(json_data: str, target_bucket: str, target_key: str) -> Dict:
     try:
         logger.info("Writing JSON data to {0}...".format(target_bucket))
         response = s3.put_object(
-            Bucket=target_bucket, Key=target_key, Body=json_data
+            Bucket=target_bucket, Key=target_key, Body=json.dumps(json_data)
         )
 
         return response
@@ -85,13 +84,13 @@ class Formatter:
 
     def get_nordigen_function(self, data_type: str):
         if data_type == "balances":
-            self.format_balances
+            return self.format_balances
         elif data_type == "transactions":
-            self.format_transactions
+            return self.format_transactions
         elif data_type == "details":
-            self.format_details
+            return self.format_details
         elif data_type == "metadata":
-            self.format_metadata
+            return self.format_metadata
         else:
             raise ValueError("Invalid data type specified!")
 
@@ -104,7 +103,7 @@ class Formatter:
             logger.info(
                 "Flattening transactions for status {0}...".format(
                     transaction_status
-                )
+                )  # noqa
             )
             logger.info(
                 "Number of transactions with status {0}: {1}".format(
