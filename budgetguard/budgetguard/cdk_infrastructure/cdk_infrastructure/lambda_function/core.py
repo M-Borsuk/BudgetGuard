@@ -140,12 +140,16 @@ class Formatter:
                 transaction["transactionAmount"] = transaction[
                     "transactionAmount"
                 ]["amount"]
-                transaction["debtorAccountIban"] = transaction[
-                    "debtorAccount"
-                ]["iban"]
-                transaction["creditorAccountIban"] = transaction[
-                    "creditorAccount"
-                ]["iban"]
+                if transaction.get("debtorAccount"):
+                    transaction["debtorAccountIban"] = transaction[
+                        "debtorAccount"
+                    ]["iban"]
+                    del transaction["debtorAccount"]
+                else:
+                    transaction["creditorAccountIban"] = transaction[
+                        "creditorAccount"
+                    ]["iban"]
+                    del transaction["creditorAccount"]
                 transaction["balanceAfterTransactionAmount"] = transaction[
                     "balanceAfterTransaction"
                 ]["balanceAmount"]["amount"]
@@ -154,12 +158,11 @@ class Formatter:
                 ]["balanceAmount"]["currency"]
                 del transaction["remittanceInformationUnstructured"]
                 del transaction["balanceAfterTransaction"]
-                del transaction["debtorAccount"]
-                del transaction["creditorAccount"]
                 transactions_flatten.append(
                     {self.camel_to_snake(k): v for k, v in transaction.items()}
                 )
         logger.info("Finished flattening transactions!")
+        return transactions_flatten
 
     def format_balances(self, balances):
         balances_flattened = balances.get("balances", {})
