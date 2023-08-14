@@ -1,6 +1,8 @@
 from aws_cdk import Stack
 from aws_cdk import aws_lambda as _lambda
 from aws_cdk import aws_ecr as _ecr
+from aws_cdk import aws_s3 as _s3
+from aws_cdk import aws_s3_notifications as _s3_notifications
 from aws_cdk import Aws, Duration
 from constructs import Construct
 
@@ -23,7 +25,7 @@ class IngestionLambdaStack(Stack):
         )
         ecr_image = _lambda.DockerImageCode.from_ecr(
             repository=ecr_repository,
-            tag="0.11.0",
+            tag="0.13.0",
             cmd=[
                 "budgetguard.cdk_infrastructure.lambda_function.core.lambda_handler"  # noqa
             ],
@@ -32,11 +34,18 @@ class IngestionLambdaStack(Stack):
         return ecr_image
 
     def build_lambda_func(self, lambda_image: _lambda.Code):
-        self.prediction_lambda = _lambda.DockerImageFunction(
+        ingestion_lambda = _lambda.DockerImageFunction(
             scope=self,
             id="IngestionLambda",
             function_name="IngestionLambda",
             code=lambda_image,
             timeout=Duration.seconds(300),
             memory_size=1024,
+        )
+        bucket = _s3.Bucket.from_bucket_name(
+            self, id="budget-guard-ingest", bucket_name="budget-guard-ingest"
+        )
+        bucket.add_event_notification(
+            _s3.EventType.OBJECT_CREATED,
+            _s3_notifications.LambdaDestination(ingestion_lambda),
         )
