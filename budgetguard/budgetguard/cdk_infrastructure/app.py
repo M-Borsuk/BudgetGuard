@@ -8,6 +8,7 @@ from cdk_infrastructure.glue.stack import (
     GlueCrawlersStack,
 )
 from cdk_infrastructure.s3_buckets.constants import BUCKET_NAMES
+from cdk_infrastructure.mwaa.stack import MWAAS3Stack
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -33,5 +34,7 @@ GlueCrawlersStack(
     "GlueCrawlersStack",
     env=env,
 )
+
+MWAAS3Stack(app, "MWAAS3Stack", env=env)
 
 app.synth()
