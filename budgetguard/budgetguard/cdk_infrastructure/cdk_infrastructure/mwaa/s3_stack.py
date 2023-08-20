@@ -8,10 +8,12 @@ class MWAAS3Stack(Stack):
     def __init__(self, scope: Construct, id: str, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
-        _s3.Bucket(
+        mwaa_bucket = _s3.Bucket(
             self,
             constants.MWAA_BUCKET_NAME,
             bucket_name=constants.MWAA_BUCKET_NAME,
             block_public_access=_s3.BlockPublicAccess.BLOCK_ALL,
             versioned=True,
         )
+
+        self.bucket = mwaa_bucket
