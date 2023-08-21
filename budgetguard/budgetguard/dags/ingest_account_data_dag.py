@@ -36,6 +36,3 @@ with DAG(
     end = EmptyOperator(task_id="end")
 
     start >> ingest_account_data >> end
-
-    if __name__ == "__main__":
-        dag.test()
