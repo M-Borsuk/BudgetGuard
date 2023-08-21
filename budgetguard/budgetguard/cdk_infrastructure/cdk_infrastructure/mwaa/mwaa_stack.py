@@ -140,6 +140,7 @@ class MWAAStack(Stack):
                 scheduler_logs=logs_conf,
                 webserver_logs=logs_conf,
                 dag_processing_logs=logs_conf,
+                task_logs=logs_conf,
             )
         )
 

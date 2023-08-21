@@ -29,15 +29,20 @@ class MWAAVpcStack(Stack):
     @property
     def get_vpc_private_subnet_ids(self) -> ec2.SelectedSubnets:
         return self.instance.select_subnets(
-            subnet_type=ec2.SubnetType.PRIVATE_ISOLATED
+            subnet_type=ec2.SubnetType.PRIVATE_WITH_NAT
         ).subnet_ids
 
     @property
     def subnets(self) -> List:
         return [
             ec2.SubnetConfiguration(
-                subnet_type=ec2.SubnetType.PRIVATE_ISOLATED,
+                subnet_type=ec2.SubnetType.PRIVATE_WITH_NAT,
                 name="mwaa-private",
+                cidr_mask=24,
+            ),
+            ec2.SubnetConfiguration(
+                subnet_type=ec2.SubnetType.PUBLIC,
+                name="mwaa-public",
                 cidr_mask=24,
             ),
         ]
@@ -79,7 +84,7 @@ class MWAAVpcStack(Stack):
                 vpc=self.instance,
                 service=service,
                 subnets=ec2.SubnetSelection(
-                    subnet_type=ec2.SubnetType.PRIVATE_ISOLATED
+                    subnet_type=ec2.SubnetType.PRIVATE_WITH_NAT
                 ),
                 private_dns_enabled=True,
                 security_groups=[self.mwaa_sg],
@@ -90,7 +95,7 @@ class MWAAVpcStack(Stack):
             service=ec2.GatewayVpcEndpointAwsService.S3,
             subnets=[
                 ec2.SubnetSelection(
-                    subnet_type=ec2.SubnetType.PRIVATE_ISOLATED
+                    subnet_type=ec2.SubnetType.PRIVATE_WITH_NAT
                 )
             ],
         )
