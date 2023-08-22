@@ -35,7 +35,6 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
           aws-bucket: "budgetguard-mwaa-bucket"
           file-path: 'requirements-mwaa.txt'
-          destination-dir: 'requirements-mwaa.txt'
 
       - name: Upload AWS MWAA DAGs to S3 bucket
         uses: shallwefootball/s3-upload-action@master
