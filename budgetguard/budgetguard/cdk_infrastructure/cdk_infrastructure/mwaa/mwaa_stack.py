@@ -155,7 +155,7 @@ class MWAAStack(Stack):
             execution_role_arn=mwaa_role.role_arn,
             source_bucket_arn=s3.bucket.bucket_arn,
             dag_s3_path="dags",
-            max_workers=2,
+            max_workers=1,
             webserver_access_mode="PUBLIC_ONLY",
             network_configuration=security_group_ids,
             logging_configuration=logging_configuration,
