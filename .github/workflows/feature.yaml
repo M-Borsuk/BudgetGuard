@@ -43,6 +43,6 @@ jobs:
         with:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
-          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_S3_BUCKET: "budgetguard-mwaa-bucket"
           SOURCE_DIR: './budgetguard/budgetguard/dags'
           DEST_DIR: 'dags'
