@@ -28,13 +28,13 @@ jobs:
         run: tox
       
       - name: Upload AWS MWAA requirements to S3 bucket
-        uses: hkusu/s3-upload-action@v2
+        uses: shallwefootball/s3-upload-action@master
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-          aws-bucket: "budgetguard-mwaa-bucket"
-          file-path: 'requirements-mwaa.txt'
+          aws_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_bucket: "budgetguard-mwaa-bucket"
+          source_dir: 'requirements-mwaa.txt'
+          destination_dir: ''
 
       - name: Upload AWS MWAA DAGs to S3 bucket
         uses: shallwefootball/s3-upload-action@master
