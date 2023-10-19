@@ -16,12 +16,7 @@ class AWSConnection(Connection):
         :return: The session object.
         """
         logger.info("Connecting to AWS session...")
-        session = boto3.session.Session(
-            aws_access_key_id=os.environ.get("AWS_ACCESS_KEY_ID"),
-            aws_secret_access_key=os.environ.get("AWS_SECRET_ACCESS_KEY"),
-            region_name=os.environ.get("AWS_REGION_NAME"),
-        )
-        return session
+        return self._get_session()
 
     def get_aws_secret(self, secret_name: str) -> str:
         """
@@ -46,3 +41,21 @@ class AWSConnection(Connection):
 
         secret = get_secret_value_response["SecretString"]
         return secret
+
+    def _get_session(self) -> boto3.session.Session:
+        """
+        Method to retrieve the session object.
+
+        :return: The session object.
+        """
+        # If running inside AWS Lambda, the credentials are automatically retrieved
+        # from the IAM role assigned to the Lambda function.
+        if os.environ.get("AWS_LAMBDA_FUNCTION_NAME"):
+            session = boto3.session.Session()
+        else:
+            session = boto3.session.Session(
+                aws_access_key_id=os.environ.get("AWS_ACCESS_KEY_ID"),
+                aws_secret_access_key=os.environ.get("AWS_SECRET_ACCESS_KEY"),
+                region_name=os.environ.get("AWS_REGION_NAME"),
+            )
+        return session
