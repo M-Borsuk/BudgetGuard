@@ -2,7 +2,6 @@ import argparse
 import sys
 import os
 from budgetguard.budgetguard.pipelines.pipeline import Pipeline
-from loguru import logger
 from dotenv import load_dotenv
 
 here = os.path.dirname(__file__)

@@ -48,8 +48,6 @@ class AWSConnection(Connection):
 
         :return: The session object.
         """
-        # If running inside AWS Lambda, the credentials are automatically retrieved
-        # from the IAM role assigned to the Lambda function.
         if os.environ.get("AWS_LAMBDA_FUNCTION_NAME"):
             session = boto3.session.Session()
         else:
