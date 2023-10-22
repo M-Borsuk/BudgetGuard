@@ -9,7 +9,6 @@ from constructs import Construct
 
 
 class IngestionLambdaStack(Stack):
-
     def __init__(
         self, scope: Construct, construct_id: str, image_name: str, **kwargs
     ) -> None:
@@ -54,7 +53,9 @@ class IngestionLambdaStack(Stack):
         ingestion_lambda.add_to_role_policy(
             _iam.PolicyStatement(
                 actions=["secretsmanager:GetSecretValue"],
-                resources=["arn:aws:secretsmanager:us-east-1:327077392103:secret:budget_guard_nordigen_key-OCfS6T"],
+                resources=[
+                    "arn:aws:secretsmanager:us-east-1:327077392103:secret:budget_guard_nordigen_key-OCfS6T"
+                ],
                 effect=_iam.Effect.ALLOW,
             )
         )
@@ -68,5 +69,3 @@ class IngestionLambdaStack(Stack):
             ),
         )
         rule.add_target(_events_targets.LambdaFunction(ingestion_lambda))
-        
-        
