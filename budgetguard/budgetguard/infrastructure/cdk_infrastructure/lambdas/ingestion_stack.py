@@ -54,7 +54,7 @@ class IngestionLambdaStack(Stack):
             _iam.PolicyStatement(
                 actions=["secretsmanager:GetSecretValue"],
                 resources=[
-                    "arn:aws:secretsmanager:us-east-1:327077392103:secret:budget_guard_nordigen_key-OCfS6T"
+                    "arn:aws:secretsmanager:us-east-1:327077392103:secret:budget_guard_nordigen_key-OCfS6T"  # noqa
                 ],
                 effect=_iam.Effect.ALLOW,
             )
