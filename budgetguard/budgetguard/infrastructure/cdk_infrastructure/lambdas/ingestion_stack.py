@@ -1,8 +1,9 @@
 from aws_cdk import Stack
 from aws_cdk import aws_lambda as _lambda
 from aws_cdk import aws_ecr as _ecr
-from aws_cdk import aws_s3 as _s3
-from aws_cdk import aws_s3_notifications as _s3_notifications
+from aws_cdk import aws_events as _events
+from aws_cdk import aws_events_targets as _events_targets
+from aws_cdk import aws_iam as _iam
 from aws_cdk import Aws, Duration
 from constructs import Construct
 
@@ -27,7 +28,7 @@ class IngestionLambdaStack(Stack):
             repository=ecr_repository,
             tag="0.13.0",
             cmd=[
-                "budgetguard.cdk_infrastructure.lambda_function.core.lambda_handler"  # noqa
+                "budgetguard.budgetguard.lambda.ingestion.lambda_handler"  # noqa
             ],
             entrypoint=["python", "-m", "awslambdaric"],
         )
@@ -42,10 +43,29 @@ class IngestionLambdaStack(Stack):
             timeout=Duration.seconds(300),
             memory_size=1024,
         )
-        bucket = _s3.Bucket.from_bucket_name(
-            self, id="budget-guard-ingest", bucket_name="budget-guard-ingest"
+        ingestion_lambda.add_to_role_policy(
+            _iam.PolicyStatement(
+                actions=["s3:GetObject", "s3:PutObject"],
+                resources=["arn:aws:s3:::budget-guard-ingest/*"],
+                effect=_iam.Effect.ALLOW,
+            )
         )
-        bucket.add_event_notification(
-            _s3.EventType.OBJECT_CREATED,
-            _s3_notifications.LambdaDestination(ingestion_lambda),
+        ingestion_lambda.add_to_role_policy(
+            _iam.PolicyStatement(
+                actions=["secretsmanager:GetSecretValue"],
+                resources=[
+                    "arn:aws:secretsmanager:us-east-1:327077392103:secret:budget_guard_nordigen_key-OCfS6T"  # noqa
+                ],
+                effect=_iam.Effect.ALLOW,
+            )
         )
+        # Rule to trigger the lambda every day at 1 AM
+        rule = _events.Rule(
+            self,
+            id="IngestionRule",
+            rule_name="IngestionRule",
+            schedule=_events.Schedule.cron(
+                minute="0", hour="1", month="*", week_day="*", year="*"
+            ),
+        )
+        rule.add_target(_events_targets.LambdaFunction(ingestion_lambda))

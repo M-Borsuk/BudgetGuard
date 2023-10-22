@@ -1,7 +1,7 @@
 import argparse
 import sys
 import os
-from budgetguard.pipelines.pipeline import Pipeline
+from budgetguard.budgetguard.pipelines.pipeline import Pipeline
 from dotenv import load_dotenv
 
 here = os.path.dirname(__file__)
@@ -35,7 +35,7 @@ def run_task(pipeline: Pipeline):
 def run(task: str, partition_id: str):
     load_dotenv()
     if task == "ingest_account_data":
-        from budgetguard.pipelines.ingest_account_data import (
+        from budgetguard.budgetguard.pipelines.ingest_account_data import (
             IngestAccountData,
         )
 
