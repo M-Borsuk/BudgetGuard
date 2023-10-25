@@ -8,7 +8,7 @@ sys.path.append(os.path.join(here, ".."))
 
 from .pipeline import Pipeline  # noqa: E402
 from datalake import Datalake  # noqa: E402
-from core.data_access_service.data_loaders import (  # noqa: E402
+from data_access_service.data_loaders import (  # noqa: E402
     create_data_loader,
 )
 from loguru import logger  # noqa: E402

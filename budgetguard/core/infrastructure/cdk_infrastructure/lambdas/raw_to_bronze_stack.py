@@ -3,6 +3,7 @@ from aws_cdk import aws_lambda as _lambda
 from aws_cdk import aws_ecr as _ecr
 from aws_cdk import aws_s3 as _s3
 from aws_cdk import aws_s3_notifications as _s3_notifications
+from aws_cdk import aws_iam as _iam
 from aws_cdk import Aws, Duration
 from constructs import Construct
 
@@ -25,9 +26,9 @@ class RawToBronzeLambdaStack(Stack):
         )
         ecr_image = _lambda.DockerImageCode.from_ecr(
             repository=ecr_repository,
-            tag="0.13.0",
+            tag="0.18.0",
             cmd=[
-                "budgetguard.budgetguard.lambda.raw_to_bronze.lambda_handler"  # noqa
+                "budgetguard.core.lambda.raw_to_bronze.lambda_handler"  # noqa
             ],
             entrypoint=["python", "-m", "awslambdaric"],
         )
@@ -41,6 +42,16 @@ class RawToBronzeLambdaStack(Stack):
             code=lambda_image,
             timeout=Duration.seconds(300),
             memory_size=1024,
+        )
+        raw_to_bronze_lambda.add_to_role_policy(
+            _iam.PolicyStatement(
+                actions=["s3:GetObject", "s3:PutObject"],
+                resources=[
+                    "arn:aws:s3:::budget-guard-ingest/*",
+                    "arn:aws:s3:::budget-guard-bronze/*",
+                ],
+                effect=_iam.Effect.ALLOW,
+            )
         )
         bucket = _s3.Bucket.from_bucket_name(
             self, id="budget-guard-ingest", bucket_name="budget-guard-ingest"
