@@ -59,7 +59,7 @@ if __name__ == "__main__":
         "redirect": "http://www.yourwebpage.com",
         "institution_id": "BANK_MILLENNIUM_BIGBPLPW",
         "reference": str(uuid4()),
-        "agreement": "557cbbc6-40da-4278-93c1-51b658cc6515",
+        "agreement": response.json()["id"],
         "user_language": "EN",
     }
 
