@@ -1,0 +1,15 @@
+FROM public.ecr.aws/emr-serverless/spark/emr-6.9.0:latest
+
+USER root
+ARG VERSION
+ARG PYTHON_VERSION=3.8.8
+# Install Python 3.8.8 - Note that python 3.10 requires OpenSSL >= 1.1.1
+RUN yum install -y gcc openssl11-devel bzip2-devel libffi-devel tar gzip wget make && \
+    wget https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz && \
+    tar xzf Python-${PYTHON_VERSION}.tgz && \
+    cd Python-${PYTHON_VERSION} && \
+    ./configure --enable-optimizations && \
+    make install
+
+RUN python3 -m pip install budgetguard==${VERSION}
+USER hadoop:hadoop
