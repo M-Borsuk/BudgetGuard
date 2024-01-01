@@ -46,17 +46,13 @@ class IngestAccountData(Pipeline):
                     "account_id": account_id,
                 }
                 data = nordigen_data[account_id][key]
-                self.output_loader.write(
-                    json.dumps(data), datalake_config, partition_config
-                )
+                self.output_loader.write(json.dumps(data), datalake_config, partition_config)
 
     def transform(self):
         """
         Transforms the data.
         """
-        raise NotImplementedError(
-            "Transform method not needed for ingestion pipeline!"
-        )
+        raise NotImplementedError("Transform method not needed for ingestion pipeline!")
 
     def run(self):
         """

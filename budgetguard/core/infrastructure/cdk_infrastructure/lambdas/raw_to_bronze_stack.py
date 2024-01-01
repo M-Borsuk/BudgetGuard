@@ -9,9 +9,7 @@ from constructs import Construct
 
 
 class RawToBronzeLambdaStack(Stack):
-    def __init__(
-        self, scope: Construct, construct_id: str, image_name: str, **kwargs
-    ) -> None:
+    def __init__(self, scope: Construct, construct_id: str, image_name: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
         self.build_lambda_func(self.get_lambda_image(image_name))
 
@@ -19,17 +17,13 @@ class RawToBronzeLambdaStack(Stack):
         ecr_repository = _ecr.Repository.from_repository_attributes(
             self,
             id="ECR",
-            repository_arn="arn:aws:ecr:{0}:{1}:repository".format(
-                Aws.REGION, Aws.ACCOUNT_ID
-            ),
+            repository_arn="arn:aws:ecr:{0}:{1}:repository".format(Aws.REGION, Aws.ACCOUNT_ID),
             repository_name=image_name,
         )
         ecr_image = _lambda.DockerImageCode.from_ecr(
             repository=ecr_repository,
             tag="0.20.0",
-            cmd=[
-                "budgetguard.core.lambda_functions.raw_to_bronze.lambda_handler"  # noqa
-            ],
+            cmd=["budgetguard.core.lambda_functions.raw_to_bronze.lambda_handler"],  # noqa
             entrypoint=["python", "-m", "awslambdaric"],
         )
         return ecr_image
@@ -53,9 +47,7 @@ class RawToBronzeLambdaStack(Stack):
                 effect=_iam.Effect.ALLOW,
             )
         )
-        bucket = _s3.Bucket.from_bucket_name(
-            self, id="budget-guard-ingest", bucket_name="budget-guard-ingest"
-        )
+        bucket = _s3.Bucket.from_bucket_name(self, id="budget-guard-ingest", bucket_name="budget-guard-ingest")
         bucket.add_event_notification(
             _s3.EventType.OBJECT_CREATED,
             _s3_notifications.LambdaDestination(raw_to_bronze_lambda),

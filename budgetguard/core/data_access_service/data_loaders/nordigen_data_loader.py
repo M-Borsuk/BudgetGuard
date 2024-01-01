@@ -25,14 +25,10 @@ class NordigenDataLoader(DataLoader):
         pbar = tqdm(self.accounts, desc="Reading accounts data...")
         for account in pbar:
             meta_data = account.get_metadata()
-            pbar.set_description(
-                "Reading data for account {0}...".format(meta_data["id"])
-            )
+            pbar.set_description("Reading data for account {0}...".format(meta_data["id"]))
             details = account.get_details()
             balances = account.get_balances()
-            transactions = account.get_transactions(
-                date_from=partition_id, date_to=partition_id
-            )
+            transactions = account.get_transactions(date_from=partition_id, date_to=partition_id)
             output[meta_data["id"]] = {
                 "details": details,
                 "balances": balances,
@@ -46,19 +42,13 @@ class NordigenDataLoader(DataLoader):
         """
         Method for writing data to the Nordigen API.
         """
-        raise NotImplementedError(
-            "Nordigen data loader doesn't support writing data."
-        )
+        raise NotImplementedError("Nordigen data loader doesn't support writing data.")
 
-    def _format_partition_id_for_transactions(
-        self, partition_id: str = None
-    ) -> str:
+    def _format_partition_id_for_transactions(self, partition_id: str = None) -> str:
         """
         Method for formatting the partition id for transactions.
         """
         if partition_id:
-            return datetime.strptime(partition_id, "%Y%m%d").strftime(
-                "%Y-%m-%d"
-            )
+            return datetime.strptime(partition_id, "%Y%m%d").strftime("%Y-%m-%d")
         else:
             return partition_id

@@ -22,13 +22,9 @@ env = Environment(
 
 app = App()
 
-IngestionLambdaStack(
-    app, "LambdaIngestionStack", image_name="budget-guard", env=env
-)
+IngestionLambdaStack(app, "LambdaIngestionStack", image_name="budget-guard", env=env)
 
-RawToBronzeLambdaStack(
-    app, "LambdaRawToBronzeStack", image_name="budget-guard", env=env
-)
+RawToBronzeLambdaStack(app, "LambdaRawToBronzeStack", image_name="budget-guard", env=env)
 
 for bucket_name in BUCKET_NAMES:
     S3DeployStack(app, f"{bucket_name}Stack", bucket_id=bucket_name, env=env)

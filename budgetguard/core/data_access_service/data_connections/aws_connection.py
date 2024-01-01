@@ -29,13 +29,9 @@ class AWSConnection(Connection):
         client: boto3.client = self.session.client(
             service_name="secretsmanager",
         )
-        logger.info(
-            f"Retrieving secret {secret_name} from AWS Secrets Manager..."  # noqa
-        )
+        logger.info(f"Retrieving secret {secret_name} from AWS Secrets Manager...")  # noqa
         try:
-            get_secret_value_response = client.get_secret_value(
-                SecretId=secret_name
-            )
+            get_secret_value_response = client.get_secret_value(SecretId=secret_name)
         except ClientError as e:
             raise e
 

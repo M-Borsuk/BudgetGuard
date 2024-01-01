@@ -20,7 +20,5 @@ class TestDummy(SparkETLTestCase):
             (8, "Warsaw", "2021-12-02", 15),
             (7, "Warsaw", "2021-12-01", 99),
         ]
-        input_df = self.spark.createDataFrame(
-            data=input_data, schema=input_schema
-        )
+        input_df = self.spark.createDataFrame(data=input_data, schema=input_schema)
         input_df.collect()
