@@ -11,7 +11,7 @@ from data_access_service.data_loaders import (  # noqa: E402
     create_data_loader,
 )
 from loguru import logger  # noqa: E402
-from pyspark.sql import DataFrame as SparkDataFrame
+from pyspark.sql import DataFrame as SparkDataFrame  # noqa: E402
 
 
 class DummyPipeline(Pipeline):
