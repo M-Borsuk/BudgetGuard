@@ -1,10 +1,17 @@
+import sys
+import os
+
+here = os.path.dirname(__file__)
+
+sys.path.append(os.path.join(here, ".."))
+
 from .pipeline import Pipeline  # noqa: E402
 from datalake import Datalake  # noqa: E402
 from data_access_service.data_loaders import (  # noqa: E402
     create_data_loader,
 )
 from loguru import logger  # noqa: E402
-from pyspark.sql import DataFrame as SparkDataFrame
+from pyspark.sql import DataFrame as SparkDataFrame  # noqa: E402
 
 
 class DummyPipeline(Pipeline):
