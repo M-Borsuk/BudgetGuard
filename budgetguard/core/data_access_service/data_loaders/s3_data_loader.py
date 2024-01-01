@@ -13,7 +13,9 @@ class S3DataLoader(DataLoader):
         """
         self.s3_connection = connect(self.NAME)
 
-    def _build_s3_prefix(self, datalake_config: Dict[str, str], partition_config: Dict[str, str]):
+    def _build_s3_prefix(
+        self, datalake_config: Dict[str, str], partition_config: Dict[str, str]
+    ):
         """
         Method for building the S3 prefix.
 
@@ -34,7 +36,9 @@ class S3DataLoader(DataLoader):
         """
         return "{0}.{1}".format(key, file_extension)
 
-    def read(self, datalake_config: Dict[str, str], partition_config: Dict[str, str]):
+    def read(
+        self, datalake_config: Dict[str, str], partition_config: Dict[str, str]
+    ):
         """
         Method for reading data from the S3 bucket.
 
@@ -76,7 +80,9 @@ class S3DataLoader(DataLoader):
         logger.info("Writing data to S3...")
         s3_client = self.s3_connection.s3_client
         prefix = self._build_s3_prefix(datalake_config, partition_config)
-        key = self._build_s3_file_key(datalake_config["datalake_key"], datalake_config["file_extension"])
+        key = self._build_s3_file_key(
+            datalake_config["datalake_key"], datalake_config["file_extension"]
+        )
         s3_client.put_object(
             Bucket=datalake_config["datalake_bucket"],
             Key="{0}/{1}".format(prefix, key),

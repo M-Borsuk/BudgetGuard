@@ -4,7 +4,9 @@ from constructs import Construct
 
 
 class S3DeployStack(Stack):
-    def __init__(self, scope: Construct, construct_id: str, bucket_id: str, **kwargs) -> None:
+    def __init__(
+        self, scope: Construct, construct_id: str, bucket_id: str, **kwargs
+    ) -> None:
         super().__init__(scope, construct_id, **kwargs)
         self.create_bucket(bucket_id)
 

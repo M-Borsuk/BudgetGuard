@@ -18,7 +18,7 @@ class DummyPipeline(Pipeline):
         self.partition_id = partition_id
         self.input_loader = create_data_loader(self.INPUT_DATA_LOADER)
         self.output_loader = create_data_loader(self.OUTPUT_DATA_LOADER)
-    
+
     def read_sources(self) -> SparkDataFrame:
         """
         Reads the data from the data sources.
@@ -31,7 +31,7 @@ class DummyPipeline(Pipeline):
             {"partition_id": self.partition_id},
         )
         return source_df
-    
+
     def write_sources(self, transformed_df: SparkDataFrame):
         """
         Writes the data to the data sources.
@@ -44,7 +44,7 @@ class DummyPipeline(Pipeline):
             self.datalake[self.OUTPUT_LAYER]["balances"],
             {"partition_id": self.partition_id},
         )
-    
+
     def transform(self, source_df: SparkDataFrame) -> SparkDataFrame:
         """
         Transforms the data.
@@ -55,7 +55,7 @@ class DummyPipeline(Pipeline):
         logger.info("Transforming data.")
         transformed_df = source_df
         return transformed_df
-    
+
     def run(self):
         """
         Runs the pipeline.

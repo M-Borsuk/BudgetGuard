@@ -9,7 +9,11 @@ class SparkETLTestCase(unittest.TestCase):
     def setUpClass(cls):
         os.environ["PYSPARK_PYTHON"] = sys.executable
         os.environ["PYSPARK_DRIVER_PYTHON"] = sys.executable
-        cls.spark = SparkSession.builder.master("local[*]").appName("Unit-tests").getOrCreate()
+        cls.spark = (
+            SparkSession.builder.master("local[*]")
+            .appName("Unit-tests")
+            .getOrCreate()
+        )
 
     @classmethod
     def tearDownClass(cls):

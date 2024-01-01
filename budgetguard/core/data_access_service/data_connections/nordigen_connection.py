@@ -30,5 +30,7 @@ class NordigenConnection(Connection):
             requisition_id=self.nordigen_json_credentials["requisition_id"]
         )
         account_ids = accounts["accounts"]
-        account_objects = [client.account_api(id=account_id) for account_id in account_ids]
+        account_objects = [
+            client.account_api(id=account_id) for account_id in account_ids
+        ]
         return account_objects

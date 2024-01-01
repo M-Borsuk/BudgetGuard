@@ -9,7 +9,9 @@ from constructs import Construct
 
 
 class IngestionLambdaStack(Stack):
-    def __init__(self, scope: Construct, construct_id: str, image_name: str, **kwargs) -> None:
+    def __init__(
+        self, scope: Construct, construct_id: str, image_name: str, **kwargs
+    ) -> None:
         super().__init__(scope, construct_id, **kwargs)
         self.build_lambda_func(self.get_lambda_image(image_name))
 
@@ -17,13 +19,17 @@ class IngestionLambdaStack(Stack):
         ecr_repository = _ecr.Repository.from_repository_attributes(
             self,
             id="ECR",
-            repository_arn="arn:aws:ecr:{0}:{1}:repository".format(Aws.REGION, Aws.ACCOUNT_ID),
+            repository_arn="arn:aws:ecr:{0}:{1}:repository".format(
+                Aws.REGION, Aws.ACCOUNT_ID
+            ),
             repository_name=image_name,
         )
         ecr_image = _lambda.DockerImageCode.from_ecr(
             repository=ecr_repository,
             tag="0.20.0",
-            cmd=["budgetguard.core.lambda_functions.ingestion.lambda_handler"],  # noqa
+            cmd=[
+                "budgetguard.core.lambda_functions.ingestion.lambda_handler"
+            ],  # noqa
             entrypoint=["python", "-m", "awslambdaric"],
         )
         return ecr_image
@@ -58,6 +64,8 @@ class IngestionLambdaStack(Stack):
             self,
             id="IngestionRule",
             rule_name="IngestionRule",
-            schedule=_events.Schedule.cron(minute="0", hour="1", month="*", week_day="*", year="*"),
+            schedule=_events.Schedule.cron(
+                minute="0", hour="1", month="*", week_day="*", year="*"
+            ),
         )
         rule.add_target(_events_targets.LambdaFunction(ingestion_lambda))

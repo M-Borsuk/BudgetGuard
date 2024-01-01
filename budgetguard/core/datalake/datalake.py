@@ -13,7 +13,13 @@ def build_layer_path(layer_name: str) -> str:
     :param layer_name: The name of the layer.
     :return: The path to the layer.
     """
-    return Path(__file__).parent.joinpath("layers").joinpath(layer_name).absolute().as_posix()
+    return (
+        Path(__file__)
+        .parent.joinpath("layers")
+        .joinpath(layer_name)
+        .absolute()
+        .as_posix()
+    )
 
 
 # noqa
@@ -119,18 +125,24 @@ class Datalake(UserDict):
             result[layer_name] = {}
             for file in os.listdir(layer_path):
                 if file.endswith(".yaml") or file.endswith(".yml"):
-                    loaded_file = self.__read_yaml_to_dict__(os.path.join(layer_path, file))
+                    loaded_file = self.__read_yaml_to_dict__(
+                        os.path.join(layer_path, file)
+                    )
                     loaded_file["datalake_layer"] = layer_name
                     result[layer_name][loaded_file["datalake_key"]] = {
                         "datalake_bucket": loaded_file["datalake_bucket"],
                         "file_extension": loaded_file["file_extension"],
                     }
                     if loaded_file.get("schema"):
-                        result[layer_name][loaded_file["datalake_key"]]["spark_schema"] = self.__dict_to_spark_schema__(
+                        result[layer_name][loaded_file["datalake_key"]][
+                            "spark_schema"
+                        ] = self.__dict_to_spark_schema__(
                             loaded_file["schema"]
                         )
                     if loaded_file.get("options"):
-                        result[layer_name][loaded_file["datalake_key"]]["options"] = self.__parse_spark_options__(
+                        result[layer_name][loaded_file["datalake_key"]][
+                            "options"
+                        ] = self.__parse_spark_options__(
                             loaded_file["options"]
                         )
 
