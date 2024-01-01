@@ -1,24 +1,6 @@
 import argparse
 from budgetguard.core.pipelines.pipeline import Pipeline
-
-
-parser = argparse.ArgumentParser()
-
-parser.add_argument(
-    "-pid",
-    "--partition-id",
-    help="The partition of the datalake to read from.",
-    type=str,
-    required=True,
-)
-
-parser.add_argument(
-    "-t",
-    "--task",
-    help="The task to run.",
-    type=str,
-    required=True,
-)
+import sys
 
 
 def run_task(pipeline: Pipeline):
@@ -33,10 +15,14 @@ def run(task: str, partition_id: str):
 
         pipeline = IngestAccountData(partition_id)
         run_task(pipeline=pipeline)
+    elif task == "dummy":
+        from budgetguard.core.pipelines.dummy_pipeline import DummyPipeline
+
+        pipeline = DummyPipeline(partition_id)
+        run_task(pipeline=pipeline)
     else:
         raise ValueError(f"Unknown task: {task}")
 
 
 if __name__ == "__main__":
-    args = parser.parse_args()
-    run(args.task, args.partition_id)
+    run(sys.argv[1], sys.argv[2])
