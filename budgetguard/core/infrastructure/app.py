@@ -33,6 +33,13 @@ RawToBronzeLambdaStack(
 for bucket_name in BUCKET_NAMES:
     S3DeployStack(app, f"{bucket_name}Stack", bucket_id=bucket_name, env=env)
 
+S3DeployStack(
+    app,
+    "BudgetGuardMainCodeStack",
+    bucket_id="budget-guard-main",
+    env=env,
+)
+
 catalog = GlueDataCatalogStack(app, "GlueDataCatalogStack", env=env)
 
 GlueCrawlersStack(

@@ -2,6 +2,7 @@ from .aws_connection import AWSConnection  # noqa
 from .connection import Connection  # noqa
 from .nordigen_connection import NordigenConnection  # noqa
 from .s3_connection import S3Connection  # noqa
+from .spark_s3_connection import SparkS3Connection  # noqa
 
 
 def connect(connection_name: str) -> Connection:
@@ -18,5 +19,7 @@ def connect(connection_name: str) -> Connection:
         return S3Connection()
     elif connection_name == "nordigen":
         return NordigenConnection()
+    elif connection_name == "spark_s3":
+        return SparkS3Connection()
     else:
         raise ValueError(f"Connection type {connection_name} not supported.")

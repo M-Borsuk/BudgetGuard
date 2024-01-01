@@ -30,8 +30,8 @@ class AWSConnection(Connection):
             service_name="secretsmanager",
         )
         logger.info(
-            f"Retrieving secret {secret_name} from AWS Secrets Manager..."  # noqa
-        )
+            f"Retrieving secret {secret_name} from AWS Secrets Manager..."
+        )  # noqa
         try:
             get_secret_value_response = client.get_secret_value(
                 SecretId=secret_name
