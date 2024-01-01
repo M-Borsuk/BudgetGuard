@@ -116,11 +116,15 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:${{ env.NEW_VERSION }} --build-arg VERSION=${{ env.NEW_VERSION }} -f Dockerfile_emr .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{ env.NEW_VERSION }}
 
-      - uses: shallwefootball/s3-upload-action@master
-        name: Upload emr_main.py to S3 bucket
-        with:
+      - name: Upload emr_main.py to S3 bucket
+        shell: bash
+        env:
           aws_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws_bucket: "budget-guard-main"
-          source_dir: "budgetguard/emr_main.py"
-          destination_dir: ""
+          aws_s3_bucket: budget-guard-main
+        run: |
+          sudo apt-get update && sudo apt-get -y install awscli
+          aws configure set aws_access_key_id $aws_key_id
+          aws configure set aws_secret_access_key $aws_secret_access_key 
+          aws configure set default.region us-east-1
+          aws s3 cp ./budgetguard/emr_main.py s3://$aws_s3_bucket/
