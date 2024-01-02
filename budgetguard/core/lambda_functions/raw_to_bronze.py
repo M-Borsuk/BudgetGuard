@@ -125,8 +125,8 @@ class Formatter:
             logger.info(
                 "Flattening transactions for status {0}...".format(
                     transaction_status
-                )
-            )  # noqa
+                )  # noqa
+            )
             logger.info(
                 "Number of transactions with status {0}: {1}".format(
                     transaction_status, len(transactions_info)

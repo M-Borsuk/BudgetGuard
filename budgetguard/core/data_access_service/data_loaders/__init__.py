@@ -1,7 +1,6 @@
 from .nordigen_data_loader import NordigenDataLoader
 from .s3_data_loader import S3DataLoader
 from .data_loader import DataLoader
-from .spark_s3_data_loader import SparkS3DataLoader
 
 
 def create_data_loader(data_loader_type: str) -> DataLoader:
@@ -16,7 +15,5 @@ def create_data_loader(data_loader_type: str) -> DataLoader:
         return NordigenDataLoader()
     elif data_loader_type == "s3":
         return S3DataLoader()
-    elif data_loader_type == "spark_s3":
-        return SparkS3DataLoader()
     else:
         raise ValueError(f"Data loader type {data_loader_type} not supported.")

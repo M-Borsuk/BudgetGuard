@@ -2,8 +2,6 @@ from collections import UserDict
 import yaml
 import os
 from pathlib import Path
-from typing import Dict, List
-import pyspark.sql.types as T
 
 
 def build_layer_path(layer_name: str) -> str:
@@ -31,34 +29,10 @@ class Datalake(UserDict):
     SILVER_LAYER_PATH = build_layer_path("silver")
     GOLD_LAYER_PATH = build_layer_path("gold")
 
-    def __read_yaml_to_dict__(self, yaml_path):
+    def _read_yaml_to_dict(self, yaml_path):
         with open(yaml_path, "r") as yaml_file:
             yaml_dict = yaml.safe_load(yaml_file)
         return yaml_dict
-
-    def __dict_to_spark_schema__(self, schema: List[Dict[str, str]]):
-        """
-        Converts a dictionary to a spark schema.
-
-        :param schema: The schema to convert.
-        :return: The spark schema.
-        """
-        spark_schema = T.StructType()
-        for field in schema:
-            spark_schema.add(field["name"], field["type"])
-        return spark_schema
-
-    def __parse_spark_options__(self, options: List[Dict[str, str]]):
-        """
-        Parses the spark options.
-
-        :param options: The options to parse.
-        :return: The parsed options.
-        """
-        result = {}
-        for option in options:
-            result[option["name"]] = option["value"]
-        return result
 
     def __setitem__(self, key, item):
         self.__dict__[key] = item
@@ -125,25 +99,11 @@ class Datalake(UserDict):
             result[layer_name] = {}
             for file in os.listdir(layer_path):
                 if file.endswith(".yaml") or file.endswith(".yml"):
-                    loaded_file = self.__read_yaml_to_dict__(
+                    loaded_file = self._read_yaml_to_dict(
                         os.path.join(layer_path, file)
                     )
                     loaded_file["datalake_layer"] = layer_name
-                    result[layer_name][loaded_file["datalake_key"]] = {
-                        "datalake_bucket": loaded_file["datalake_bucket"],
-                        "file_extension": loaded_file["file_extension"],
-                    }
-                    if loaded_file.get("schema"):
-                        result[layer_name][loaded_file["datalake_key"]][
-                            "spark_schema"
-                        ] = self.__dict_to_spark_schema__(
-                            loaded_file["schema"]
-                        )
-                    if loaded_file.get("options"):
-                        result[layer_name][loaded_file["datalake_key"]][
-                            "options"
-                        ] = self.__parse_spark_options__(
-                            loaded_file["options"]
-                        )
-
+                    result[layer_name][
+                        loaded_file["datalake_key"]
+                    ] = loaded_file
         self.update(result)

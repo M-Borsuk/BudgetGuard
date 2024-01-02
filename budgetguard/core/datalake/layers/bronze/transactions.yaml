@@ -1,3 +1,0 @@
-datalake_bucket: budget-guard-bronze
-datalake_key: transactions
-file_extension: json

@@ -1,13 +1,13 @@
 name: Build develop branch CI/CD
 
 on:
-  push:
-    branches:
-      - "develop"
+    push:
+      branches:
+        - 'develop'
 
 env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  PAT: ${{ secrets.PAT }}
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    PAT: ${{ secrets.PAT }}
 
 jobs:
   build:
@@ -19,8 +19,8 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v2
         with:
-          ref: ${{ github.ref }}
-          token: ${{ env.PAT }}
+            ref: ${{ github.ref }}
+            token: ${{ env.PAT }}
 
       - name: Setup Python
         uses: actions/setup-python@v2
@@ -34,65 +34,53 @@ jobs:
 
       - name: Run tox
         run: tox
-
+  
       - name: Get current version and new version from VERSION file
         run: |
-          RAW_OUTPUT=$(bumpversion --list patch --dry-run)
-          OLD_VERSION=$(echo "$RAW_OUTPUT" | grep -o 'current_version=\S*' | cut -d= -f2)
-          NEW_VERSION=$(echo "$RAW_OUTPUT" | grep -o 'new_version=\S*' | cut -d= -f2)
-          echo "Current Version: $OLD_VERSION"
-          echo "New Version: $NEW_VERSION"
-          echo "NEW_VERSION=${NEW_VERSION}" >> $GITHUB_ENV
-          echo "OLD_VERSION=${OLD_VERSION}" >> $GITHUB_ENV
+            RAW_OUTPUT=$(bumpversion --list patch --dry-run)
+            OLD_VERSION=$(echo "$RAW_OUTPUT" | grep -o 'current_version=\S*' | cut -d= -f2)
+            NEW_VERSION=$(echo "$RAW_OUTPUT" | grep -o 'new_version=\S*' | cut -d= -f2)
+            echo "Current Version: $OLD_VERSION"
+            echo "New Version: $NEW_VERSION"
+            echo "NEW_VERSION=${NEW_VERSION}" >> $GITHUB_ENV
+            echo "OLD_VERSION=${OLD_VERSION}" >> $GITHUB_ENV
 
       - name: Bump version
         run: |
-          bump2version patch --allow-dirty --new-version ${{ env.NEW_VERSION }} --verbose
-
+            bump2version patch --allow-dirty --new-version ${{ env.NEW_VERSION }} --verbose
+      
       - name: Update requirements.txt for release
         run: |
-          poetry export -f requirements.txt --output requirements.txt --without-hashes
-
+            poetry export -f requirements.txt --output requirements.txt --without-hashes
+      
       - name: Commit version bump
         run: |
-          git config --local user.email "actions@github.com"
-          git config --local user.name "GitHub Actions"
-          git commit -a -m "✅ Bump version from ${{ env.OLD_VERSION }} to ${{ env.NEW_VERSION }} by Github Actions Bot 🤖"
+            git config --local user.email "actions@github.com"
+            git config --local user.name "GitHub Actions"
+            git commit -a -m "✅ Bump version from ${{ env.OLD_VERSION }} to ${{ env.NEW_VERSION }} by Github Actions Bot 🤖"
 
       - name: Push changes to protected branch
         uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ env.GITHUB_TOKEN }}
-          branch: develop
-
+            github_token: ${{ env.GITHUB_TOKEN }}
+            branch: develop
+    
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ env.NEW_VERSION }}
-          release_name: Release v${{ env.NEW_VERSION }}
-          draft: false
-          prerelease: false
-
+            tag_name: v${{ env.NEW_VERSION }}
+            release_name: Release v${{ env.NEW_VERSION }}
+            draft: false
+            prerelease: false
+      
       - name: Configure poetry
         env:
           pypi_token: ${{ secrets.PyPI_TOKEN }}
         run: poetry config pypi-token.pypi $pypi_token
-
+    
       - name: Build and publish
         run: poetry publish --build
-
-      - name: Upload emr_main.py to S3 bucket
-        shell: bash
-        env:
-          aws_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws_s3_bucket: budget-guard-main
-        run: |
-          sudo apt-get update && sudo apt-get -y install awscli
-          aws configure set aws_access_key_id $aws_key_id
-          aws configure set aws_secret_access_key $aws_secret_access_key 
-          aws configure set default.region us-east-1
-          aws s3 cp ./budgetguard/emr_main.py s3://$aws_s3_bucket/
+          

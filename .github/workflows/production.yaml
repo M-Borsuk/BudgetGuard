@@ -3,7 +3,7 @@ name: Build production branch CI/CD
 on:
   push:
     branches:
-      - "production"
+        - "production"
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -19,8 +19,8 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v2
         with:
-          ref: ${{ github.ref }}
-          token: ${{ env.PAT }}
+            ref: ${{ github.ref }}
+            token: ${{ env.PAT }}
 
       - name: Setup Python
         uses: actions/setup-python@v2
@@ -34,61 +34,61 @@ jobs:
 
       - name: Run tox
         run: tox
-
+  
       - name: Get current version and new version from VERSION file
         run: |
-          RAW_OUTPUT=$(bumpversion --list minor --dry-run)
-          OLD_VERSION=$(echo "$RAW_OUTPUT" | grep -o 'current_version=\S*' | cut -d= -f2)
-          NEW_VERSION=$(echo "$RAW_OUTPUT" | grep -o 'new_version=\S*' | cut -d= -f2)
-          echo "Current Version: $OLD_VERSION"
-          echo "New Version: $NEW_VERSION"
-          echo "NEW_VERSION=${NEW_VERSION}" >> $GITHUB_ENV
-          echo "OLD_VERSION=${OLD_VERSION}" >> $GITHUB_ENV
+            RAW_OUTPUT=$(bumpversion --list minor --dry-run)
+            OLD_VERSION=$(echo "$RAW_OUTPUT" | grep -o 'current_version=\S*' | cut -d= -f2)
+            NEW_VERSION=$(echo "$RAW_OUTPUT" | grep -o 'new_version=\S*' | cut -d= -f2)
+            echo "Current Version: $OLD_VERSION"
+            echo "New Version: $NEW_VERSION"
+            echo "NEW_VERSION=${NEW_VERSION}" >> $GITHUB_ENV
+            echo "OLD_VERSION=${OLD_VERSION}" >> $GITHUB_ENV
 
       - name: Bump version
         run: |
-          bump2version minor --allow-dirty --new-version ${{ env.NEW_VERSION }} --verbose
-
+            bump2version minor --allow-dirty --new-version ${{ env.NEW_VERSION }} --verbose
+      
       - name: Update requirements.txt for release
         run: |
-          poetry export -f requirements.txt --output requirements.txt --without-hashes
-
+            poetry export -f requirements.txt --output requirements.txt --without-hashes
+      
       - name: Commit version bump
         run: |
-          git config --local user.email "actions@github.com"
-          git config --local user.name "GitHub Actions"
-          git commit -a -m "✅ Bump version from ${{ env.OLD_VERSION }} to ${{ env.NEW_VERSION }} by Github Actions Bot 🤖"
+            git config --local user.email "actions@github.com"
+            git config --local user.name "GitHub Actions"
+            git commit -a -m "✅ Bump version from ${{ env.OLD_VERSION }} to ${{ env.NEW_VERSION }} by Github Actions Bot 🤖"
 
       - name: Push changes to protected branch
         uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ env.GITHUB_TOKEN }}
-          branch: production
-
+            github_token: ${{ env.GITHUB_TOKEN }}
+            branch: production
+    
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ env.NEW_VERSION }}
-          release_name: Release v${{ env.NEW_VERSION }}
-          draft: false
-          prerelease: false
+            tag_name: v${{ env.NEW_VERSION }}
+            release_name: Release v${{ env.NEW_VERSION }}
+            draft: false
+            prerelease: false
 
       - name: Configure poetry
         env:
           pypi_token: ${{ secrets.PyPI_TOKEN }}
         run: poetry config pypi-token.pypi $pypi_token
-
+    
       - name: Build and publish
         run: poetry publish --build
-
+      
       - name: Sleep for 2 minutes (waiting for PyPI to update)
         uses: jakejarvis/wait-action@master
         with:
-          time: "120s"
-
+          time: '120s'
+      
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -107,7 +107,7 @@ jobs:
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:${{ env.NEW_VERSION }} --build-arg VERSION=${{ env.NEW_VERSION }} .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{ env.NEW_VERSION }}
-
+      
       - name: Build, tag, and push EMR image to Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -115,16 +115,3 @@ jobs:
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:${{ env.NEW_VERSION }} --build-arg VERSION=${{ env.NEW_VERSION }} -f Dockerfile_emr .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{ env.NEW_VERSION }}
-
-      - name: Upload emr_main.py to S3 bucket
-        shell: bash
-        env:
-          aws_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws_s3_bucket: budget-guard-main
-        run: |
-          sudo apt-get update && sudo apt-get -y install awscli
-          aws configure set aws_access_key_id $aws_key_id
-          aws configure set aws_secret_access_key $aws_secret_access_key 
-          aws configure set default.region us-east-1
-          aws s3 cp ./budgetguard/emr_main.py s3://$aws_s3_bucket/
