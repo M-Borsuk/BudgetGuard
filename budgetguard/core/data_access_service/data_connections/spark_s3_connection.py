@@ -31,7 +31,7 @@ class SparkS3Connection(Connection):
         )
         spark._jsc.hadoopConfiguration().set(
             "fs.s3a.aws.credentials.provider",
-            "org.apache.hadoop.fs.s3a.BasicAWSCredentialsProvider",
+            "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider",
         )
         spark._jsc.hadoopConfiguration().set(
             "fs.s3a.endpoint", "us-east-1.amazonaws.com"
