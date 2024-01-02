@@ -28,6 +28,7 @@ class AWSConnection(Connection):
         """
         client: boto3.client = self.session.client(
             service_name="secretsmanager",
+            region_name="us-east-1",
         )
         logger.info(
             f"Retrieving secret {secret_name} from AWS Secrets Manager..."
