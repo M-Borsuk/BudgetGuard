@@ -40,16 +40,15 @@ class SparkS3DataLoader(DataLoader):
                 self.spark_s3_connection.spark_session.read.format(
                     datalake_config["file_extension"]
                 )
-                #.options(**options)
-                .schema(schema)
-                .load(file_path)
+                # .options(**options)
+                .schema(schema).load(file_path)
             )
         else:
             df = (
                 self.spark_s3_connection.spark_session.read.format(
                     datalake_config["file_extension"]
                 )
-                #.options(**options)
+                # .options(**options)
                 .load(file_path)
             )
         logger.info("Finished reading data from path: {0}".format(file_path))
