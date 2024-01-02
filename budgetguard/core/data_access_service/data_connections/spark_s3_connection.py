@@ -14,28 +14,28 @@ class SparkS3Connection(Connection):
 
     def __create_spark_session__(self) -> SparkSession:
         spark = SparkSession.builder.appName("BudgetGuard").getOrCreate()
-        aws_credentials = json.loads(
-            self.s3_connection.get_aws_secret("budget_guard_aws_credentials")
-        )
-        spark._jsc.hadoopConfiguration().set(
-            "fs.s3a.access.key", aws_credentials["aws_access_key_id"]
-        )
-        spark._jsc.hadoopConfiguration().set(
-            "fs.s3a.secret.key", aws_credentials["aws_secret_access_key"]
-        )
-        spark._jsc.hadoopConfiguration().set(
-            "fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem"
-        )
-        spark._jsc.hadoopConfiguration().set(
-            "com.amazonaws.services.s3.enableV4", "true"
-        )
-        spark._jsc.hadoopConfiguration().set(
-            "fs.s3a.aws.credentials.provider",
-            "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider",
-        )
-        spark._jsc.hadoopConfiguration().set(
-            "fs.s3a.endpoint", "us-east-1.amazonaws.com"
-        )
+        # aws_credentials = json.loads(
+        #     self.s3_connection.get_aws_secret("budget_guard_aws_credentials")
+        # )
+        # spark._jsc.hadoopConfiguration().set(
+        #     "fs.s3a.access.key", aws_credentials["aws_access_key_id"]
+        # )
+        # spark._jsc.hadoopConfiguration().set(
+        #     "fs.s3a.secret.key", aws_credentials["aws_secret_access_key"]
+        # )
+        # spark._jsc.hadoopConfiguration().set(
+        #     "fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem"
+        # )
+        # spark._jsc.hadoopConfiguration().set(
+        #     "com.amazonaws.services.s3.enableV4", "true"
+        # )
+        # spark._jsc.hadoopConfiguration().set(
+        #     "fs.s3a.aws.credentials.provider",
+        #     "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider",
+        # )
+        # spark._jsc.hadoopConfiguration().set(
+        #     "fs.s3a.endpoint", "us-east-1.amazonaws.com"
+        # )
         return spark
 
     def connect(self) -> SparkSession:

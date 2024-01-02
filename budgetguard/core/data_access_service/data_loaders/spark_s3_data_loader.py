@@ -19,7 +19,7 @@ class SparkS3DataLoader(DataLoader):
         """
         Method for building the file path.
         """
-        return "s3a://{0}/{1}/{2}/*/balances.json".format(
+        return "s3://{0}/{1}/{2}/balances.json".format(
             datalake_config["datalake_bucket"],
             datalake_config["datalake_key"],
             self.build_partition_path(partition_config),
@@ -40,7 +40,7 @@ class SparkS3DataLoader(DataLoader):
                 self.spark_s3_connection.spark_session.read.format(
                     datalake_config["file_extension"]
                 )
-                .options(**options)
+                #.options(**options)
                 .schema(schema)
                 .load(file_path)
             )
@@ -49,7 +49,7 @@ class SparkS3DataLoader(DataLoader):
                 self.spark_s3_connection.spark_session.read.format(
                     datalake_config["file_extension"]
                 )
-                .options(**options)
+                #.options(**options)
                 .load(file_path)
             )
         logger.info("Finished reading data from path: {0}".format(file_path))
