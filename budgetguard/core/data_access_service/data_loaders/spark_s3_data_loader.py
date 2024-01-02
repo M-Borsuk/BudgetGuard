@@ -32,11 +32,12 @@ class SparkS3DataLoader(DataLoader):
         """
         logger.info("Reading data from datalake.")
         file_path = self.__build_file_path__(datalake_config, partition_config)
+        options = datalake_config.get("options", {})
         return (
             self.spark_s3_connection.spark_session.read.format(
                 datalake_config["file_extension"]
             )
-            .options(**datalake_config["options"])
+            .options(**options)
             .schema(datalake_config.get("spark_schema", None))
             .load(file_path)
         )
