@@ -1,6 +1,5 @@
 from .connection import Connection
 from .s3_connection import S3Connection
-from . import connect
 from pyspark.sql import SparkSession
 from loguru import logger
 
@@ -9,7 +8,7 @@ class SparkS3Connection(Connection):
     NAME = "spark_s3"
 
     def __init__(self) -> None:
-        self.s3_connection: S3Connection = connect("s3")
+        self.s3_connection: S3Connection = S3Connection()
         self.spark_session: SparkSession = SparkS3Connection.connect(self)
 
     def __create_spark_session__(self) -> SparkSession:
