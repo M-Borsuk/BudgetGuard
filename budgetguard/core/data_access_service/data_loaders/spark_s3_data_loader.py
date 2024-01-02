@@ -1,7 +1,6 @@
 from .data_loader import DataLoader
 from ..data_connections import connect
 from loguru import logger
-from pyspark.sql import SparkSession
 from typing import Dict
 
 
