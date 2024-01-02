@@ -67,7 +67,6 @@ class SparkS3DataLoader(DataLoader):
         logger.info("Writing data to path: {0}".format(file_path))
         (
             dataframe.write.format(datalake_config["file_extension"])
-            .options(**datalake_config["options"])
-            .mode("overwrite")
-            .save(file_path)
+            # .options(**datalake_config["options"])
+            .mode("overwrite").save(file_path)
         )
