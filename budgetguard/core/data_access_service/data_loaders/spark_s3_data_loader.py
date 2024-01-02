@@ -19,7 +19,8 @@ class SparkS3DataLoader(DataLoader):
         """
         Method for building the file path.
         """
-        return "s3a://{0}/{1}".format(
+        return "s3a://{0}/{1}/{2}".format(
+            datalake_config["datalake_bucket"],
             datalake_config["datalake_key"],
             self.build_partition_path(partition_config),
         )
@@ -30,8 +31,8 @@ class SparkS3DataLoader(DataLoader):
         """
         Method for reading data from the datalake.
         """
-        logger.info("Reading data from datalake.")
         file_path = self.__build_file_path__(datalake_config, partition_config)
+        logger.info("Reading data from path: {0}".format(file_path))
         options = datalake_config.get("options", {})
         schema = datalake_config.get("spark_schema", None)
         if schema:
@@ -61,8 +62,8 @@ class SparkS3DataLoader(DataLoader):
         """
         Method for writing data to the datalake.
         """
-        logger.info("Writing data to datalake.")
         file_path = self.__build_file_path__(datalake_config, partition_config)
+        logger.info("Writing data to path: {0}".format(file_path))
         (
             dataframe.write.format(datalake_config["file_extension"])
             .options(**datalake_config["options"])
