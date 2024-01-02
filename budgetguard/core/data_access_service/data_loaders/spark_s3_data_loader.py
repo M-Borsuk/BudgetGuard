@@ -1,7 +1,6 @@
 from .data_loader import DataLoader
 from ..data_connections import connect
 from loguru import logger
-from pyspark.sql import SparkSession
 from typing import Dict
 
 
@@ -12,7 +11,7 @@ class SparkS3DataLoader(DataLoader):
         """
         Constructor for SparkS3DataLoader class.
         """
-        self.spark_s3_connection: SparkSession = connect(self.NAME)
+        self.spark_s3_connection = connect(self.NAME)
 
     def __build_file_path__(
         self, datalake_config: Dict[str, str], partition_config: Dict[str, str]
@@ -33,14 +32,25 @@ class SparkS3DataLoader(DataLoader):
         """
         logger.info("Reading data from datalake.")
         file_path = self.__build_file_path__(datalake_config, partition_config)
-        return (
-            self.spark_s3_connection.read.format(
-                datalake_config["file_extension"]
+        options = datalake_config.get("options", {})
+        schema = datalake_config.get("spark_schema", None)
+        if schema:
+            return (
+                self.spark_s3_connection.spark_session.read.format(
+                    datalake_config["file_extension"]
+                )
+                .options(**options)
+                .schema(schema)
+                .load(file_path)
             )
-            .options(**datalake_config["options"])
-            .schema(datalake_config["spark_schema"])
-            .load(file_path)
-        )
+        else:
+            return (
+                self.spark_s3_connection.spark_session.read.format(
+                    datalake_config["file_extension"]
+                )
+                .options(**options)
+                .load(file_path)
+            )
 
     def write(
         self,

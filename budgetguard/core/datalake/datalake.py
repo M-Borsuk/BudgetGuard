@@ -130,6 +130,7 @@ class Datalake(UserDict):
                     )
                     loaded_file["datalake_layer"] = layer_name
                     result[layer_name][loaded_file["datalake_key"]] = {
+                        "datalake_key": loaded_file["datalake_key"],
                         "datalake_bucket": loaded_file["datalake_bucket"],
                         "file_extension": loaded_file["file_extension"],
                     }

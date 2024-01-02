@@ -2,6 +2,7 @@ from .connection import Connection
 from .s3_connection import S3Connection
 from pyspark.sql import SparkSession
 from loguru import logger
+import json
 
 
 class SparkS3Connection(Connection):
@@ -13,8 +14,8 @@ class SparkS3Connection(Connection):
 
     def __create_spark_session__(self) -> SparkSession:
         spark = SparkSession.builder.appName("BudgetGuard").getOrCreate()
-        aws_credentials = self.s3_connection.get_aws_secret(
-            "budget_guard_aws_credentials"
+        aws_credentials = json.loads(
+            self.s3_connection.get_aws_secret("budget_guard_aws_credentials")
         )
         spark._jsc.hadoopConfiguration().set(
             "fs.s3a.access.key", aws_credentials["aws_access_key_id"]
@@ -30,7 +31,7 @@ class SparkS3Connection(Connection):
         )
         spark._jsc.hadoopConfiguration().set(
             "fs.s3a.aws.credentials.provider",
-            "org.apache.hadoop.fs.s3a.BasicAWSCredentialsProvider",
+            "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider",
         )
         spark._jsc.hadoopConfiguration().set(
             "fs.s3a.endpoint", "us-east-1.amazonaws.com"
