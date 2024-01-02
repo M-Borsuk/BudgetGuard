@@ -35,7 +35,10 @@ class DummyPipeline(Pipeline):
         logger.info("Reading data from datalake.")
         source_df = self.input_loader.read(
             self.datalake[self.INPUT_LAYER]["balances"],
-            {"partition_id": self.partition_id},
+            {
+                "partition_id": self.partition_id,
+                "account_id": "01888676-2034-4326-9f5c-ff78de6723ba",
+            },
         )
         return source_df
 
