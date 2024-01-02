@@ -19,7 +19,7 @@ class SparkS3DataLoader(DataLoader):
         """
         Method for building the file path.
         """
-        return "s3a://{0}/{1}/{2}/*/*.json".format(
+        return "s3a://{0}/{1}/{2}/*/balances.json".format(
             datalake_config["datalake_bucket"],
             datalake_config["datalake_key"],
             self.build_partition_path(partition_config),
