@@ -19,7 +19,7 @@ class SparkS3DataLoader(DataLoader):
         """
         Method for building the file path.
         """
-        return "s3://{0}/{1}/{2}/balances.json".format(
+        return "s3://{0}/{1}/{2}".format(
             datalake_config["datalake_bucket"],
             datalake_config["datalake_key"],
             self.build_partition_path(partition_config),
@@ -33,22 +33,23 @@ class SparkS3DataLoader(DataLoader):
         """
         file_path = self.__build_file_path__(datalake_config, partition_config)
         logger.info("Reading data from path: {0}".format(file_path))
-        # options = datalake_config.get("options", {})
+        options = datalake_config.get("options", {})
         schema = datalake_config.get("spark_schema", None)
         if schema:
             df = (
                 self.spark_s3_connection.spark_session.read.format(
                     datalake_config["file_extension"]
                 )
-                # .options(**options)
-                .schema(schema).load(file_path)
+                .options(**options)
+                .schema(schema)
+                .load(file_path)
             )
         else:
             df = (
                 self.spark_s3_connection.spark_session.read.format(
                     datalake_config["file_extension"]
                 )
-                # .options(**options)
+                .options(**options)
                 .load(file_path)
             )
         logger.info("Finished reading data from path: {0}".format(file_path))
@@ -65,8 +66,10 @@ class SparkS3DataLoader(DataLoader):
         """
         file_path = self.__build_file_path__(datalake_config, partition_config)
         logger.info("Writing data to path: {0}".format(file_path))
+        options = datalake_config.get("options", {})
         (
             dataframe.write.format(datalake_config["file_extension"])
-            # .options(**datalake_config["options"])
-            .mode("overwrite").save(file_path)
+            .options(**options)
+            .mode("overwrite")
+            .save(file_path)
         )

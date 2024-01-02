@@ -37,7 +37,6 @@ class DummyPipeline(Pipeline):
             self.datalake[self.INPUT_LAYER]["balances"],
             {
                 "partition_id": self.partition_id,
-                "account_id": "*",
             },
         )
         return source_df
