@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "budgetguard"
-version = "0.31.6"
+version = "0.31.7"
 description = ""
 authors = ["Mateusz Borsuk <mtszborsuk212@gmail.com>"]
 readme = "README.md"
