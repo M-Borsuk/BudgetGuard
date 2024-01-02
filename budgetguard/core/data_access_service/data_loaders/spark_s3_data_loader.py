@@ -33,7 +33,7 @@ class SparkS3DataLoader(DataLoader):
         """
         file_path = self.__build_file_path__(datalake_config, partition_config)
         logger.info("Reading data from path: {0}".format(file_path))
-        #options = datalake_config.get("options", {})
+        # options = datalake_config.get("options", {})
         schema = datalake_config.get("spark_schema", None)
         if schema:
             df = (
