@@ -38,7 +38,7 @@ class SparkS3DataLoader(DataLoader):
                 datalake_config["file_extension"]
             )
             .options(**datalake_config["options"])
-            .schema(datalake_config["spark_schema"])
+            .schema(datalake_config.get("spark_schema", None))
             .load(file_path)
         )
 
