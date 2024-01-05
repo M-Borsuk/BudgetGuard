@@ -1,9 +1,30 @@
 from abc import ABC, abstractmethod
 import requests
 from loguru import logger
+import os
+from enum import Enum
 
 
 class Connection(ABC):
+    class __Platform__(Enum):
+        LOCAL = "local"
+        EMR = "emr"
+
+    def __init__(self) -> None:
+        """
+        Constructor for Pipeline class.
+        """
+        self.platform = self.__set_platform__()
+
+    def __set_platform__(self) -> str:
+        """
+        Sets the platform.
+        """
+        if 'EMR_CLUSTER_ID' in os.environ:
+            return self.__Platform__.EMR
+        else:
+            return self.__Platform__.LOCAL
+    
     @abstractmethod
     def connect(self):
         """
