@@ -7,6 +7,7 @@ from loguru import logger
 
 class AWSConnection(Connection):
     def __init__(self) -> None:
+        super().__init__()
         self.session: boto3.session.Session = AWSConnection.connect(self)
 
     def connect(self) -> boto3.session.Session:

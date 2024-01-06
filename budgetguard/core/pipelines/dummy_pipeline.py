@@ -72,4 +72,5 @@ class DummyPipeline(Pipeline):
         logger.info("Running the dummy pipeline...")
         source_df = self.read_sources()
         transformed_df = self.transform(source_df)
+        transformed_df.show(20, False)
         self.write_sources(transformed_df)
