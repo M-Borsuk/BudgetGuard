@@ -2,7 +2,7 @@ datalake_bucket: budget-guard-bronze
 datalake_key: balances
 file_extension: json
 options:
-  - name: recursiveFileLookup
-    value: "true"
+  - name: pathGlobFilter
+    value: '*.json'
   - name: basePath
     value: s3://budget-guard-bronze/balances/
