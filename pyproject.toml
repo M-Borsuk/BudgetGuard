@@ -6,7 +6,7 @@ authors = ["Mateusz Borsuk <mtszborsuk212@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.8.1,<3.9"
+python = ">=3.8.1,<=3.11"
 pyspark = "3.2.0"
 boto3 = "^1.26.130"
 nordigen = "^1.3.1"

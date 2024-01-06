@@ -1,7 +1,7 @@
 import argparse
 import sys
 import os
-from .core.pipelines.pipeline import Pipeline
+from core.pipelines.pipeline import Pipeline
 from dotenv import load_dotenv
 
 here = os.path.dirname(__file__)
@@ -35,11 +35,16 @@ def run_task(pipeline: Pipeline):
 def run(task: str, partition_id: str):
     load_dotenv()
     if task == "ingest_account_data":
-        from .core.pipelines.ingest_account_data import (
+        from core.pipelines.ingest_account_data import (
             IngestAccountData,
         )
 
         pipeline = IngestAccountData(partition_id)
+        run_task(pipeline=pipeline)
+    elif task == "dummy":
+        from core.pipelines.dummy_pipeline import DummyPipeline
+
+        pipeline = DummyPipeline(partition_id)
         run_task(pipeline=pipeline)
     else:
         raise ValueError(f"Unknown task: {task}")

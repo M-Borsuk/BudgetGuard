@@ -20,11 +20,11 @@ class Connection(ABC):
         """
         Sets the platform.
         """
-        if 'EMR_CLUSTER_ID' in os.environ:
+        if "EMR_CLUSTER_ID" in os.environ:
             return self.__Platform__.EMR
         else:
             return self.__Platform__.LOCAL
-    
+
     @abstractmethod
     def connect(self):
         """

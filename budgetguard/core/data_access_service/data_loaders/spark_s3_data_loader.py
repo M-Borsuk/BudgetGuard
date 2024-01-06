@@ -32,9 +32,15 @@ class SparkS3DataLoader(DataLoader):
         """
         Method for getting the bucket prefix.
         """
-        if self.spark_s3_connection.platform == self.__Platform__.LOCAL:
+        if (
+            self.spark_s3_connection.platform
+            == self.spark_s3_connection.__Platform__.LOCAL
+        ):
             return "s3a://"
-        elif self.spark_s3_connection.platform == self.__Platform__.EMR:
+        elif (
+            self.spark_s3_connection.platform
+            == self.spark_s3_connection.__Platform__.EMR
+        ):
             return "s3://"
         else:
             raise Exception("Unknown platform!")
