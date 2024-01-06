@@ -4,3 +4,5 @@ file_extension: json
 options:
   - name: recursiveFileLookup
     value: "true"
+  - name: basePath
+    value: s3://budget-guard-bronze/balances/
