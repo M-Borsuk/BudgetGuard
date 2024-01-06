@@ -10,6 +10,7 @@ from loguru import logger
 
 class NordigenConnection(Connection):
     def __init__(self) -> None:
+        super().__init__()
         self.aws_connection: AWSConnection = AWSConnection()
         self.nordigen_json_credentials: Dict[str, str] = json.loads(
             self.aws_connection.get_aws_secret("budget_guard_nordigen_key")

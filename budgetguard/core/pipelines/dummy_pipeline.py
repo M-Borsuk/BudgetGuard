@@ -35,7 +35,9 @@ class DummyPipeline(Pipeline):
         logger.info("Reading data from datalake.")
         source_df = self.input_loader.read(
             self.datalake[self.INPUT_LAYER]["balances"],
-            {"partition_id": self.partition_id},
+            {
+                "partition_id": self.partition_id,
+            },
         )
         return source_df
 
@@ -70,4 +72,5 @@ class DummyPipeline(Pipeline):
         logger.info("Running the dummy pipeline...")
         source_df = self.read_sources()
         transformed_df = self.transform(source_df)
+        transformed_df.show(20, False)
         self.write_sources(transformed_df)
