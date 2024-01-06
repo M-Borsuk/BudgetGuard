@@ -22,7 +22,7 @@ class SparkS3Connection(Connection):
                 SparkSession.builder.appName("BudgetGuard")
                 .config(
                     "spark.jars",
-                    "/opt/miniconda3/lib/python3.11/site-packages/pyspark/jars/aws-java-sdk-bundle-1.11.901.jar,/opt/miniconda3/lib/python3.11/site-packages/pyspark/jars/hadoop-aws-3.3.1.jar",
+                    "/opt/miniconda3/lib/python3.11/site-packages/pyspark/jars/aws-java-sdk-bundle-1.11.901.jar,/opt/miniconda3/lib/python3.11/site-packages/pyspark/jars/hadoop-aws-3.3.1.jar",  # noqa: E501
                 )
                 .getOrCreate()
             )
