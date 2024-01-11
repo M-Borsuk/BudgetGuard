@@ -28,9 +28,11 @@ class BronzeToSilverTransactionsPipeline(BronzeToSilverPipeline):
         """
         logger.info("Transforming data.")
         transformed_df = source_df.withColumn(
-            "creditor_account_iban", F.col("creditor_account.iban").cast("string")
+            "creditor_account_iban",
+            F.col("creditor_account.iban").cast("string"),
         )
         transformed_df = transformed_df.withColumn(
-            "remittance_information_unstructured", F.explode("remittance_information_unstructured_array")
+            "remittance_information_unstructured",
+            F.explode("remittance_information_unstructured_array"),
         )
         return transformed_df

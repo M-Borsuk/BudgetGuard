@@ -47,7 +47,7 @@ class SparkS3DataLoader(DataLoader):
             return "s3://"
         else:
             raise Exception("Unknown platform!")
-    
+
     def __build_options__(self, raw_options: Dict[str, str]) -> Dict[str, str]:
         """
         Method for building the options.
@@ -119,7 +119,9 @@ class SparkS3DataLoader(DataLoader):
             .save(file_path)
         )
 
-    def __apply_schema_on_write__(self, df: DataFrame, schema: T.StructType) -> DataFrame:
+    def __apply_schema_on_write__(
+        self, df: DataFrame, schema: T.StructType
+    ) -> DataFrame:
         """
         Method for applying schema on write.
         """

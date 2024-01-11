@@ -6,13 +6,14 @@ here = os.path.dirname(__file__)
 sys.path.append(os.path.join(here, ".."))
 
 from ..pipeline import Pipeline  # noqa: E402
-from ...datalake import Datalake # noqa: E402
+from ...datalake import Datalake  # noqa: E402
 from ...data_access_service.data_loaders import (  # noqa: E402
     create_data_loader,
 )
 from loguru import logger  # noqa: E402
 from pyspark.sql import DataFrame as SparkDataFrame  # noqa: E402
 from abc import abstractmethod  # noqa: E402
+
 
 class BronzeToSilverPipeline(Pipeline):
     INPUT_DATA_LOADER = "spark_s3"
@@ -63,7 +64,6 @@ class BronzeToSilverPipeline(Pipeline):
         :return: The transformed data.
         """
         raise NotImplementedError("Transform method not implemented!")
-        
 
     def run(self):
         """
