@@ -5,16 +5,16 @@ here = os.path.dirname(__file__)
 
 sys.path.append(os.path.join(here, ".."))
 
-from .pipeline import Pipeline  # noqa: E402
-from datalake import Datalake  # noqa: E402
-from data_access_service.data_loaders import (  # noqa: E402
+from ..pipeline import Pipeline  # noqa: E402
+from ...datalake import Datalake # noqa: E402
+from ...data_access_service.data_loaders import (  # noqa: E402
     create_data_loader,
 )
 from loguru import logger  # noqa: E402
 from pyspark.sql import DataFrame as SparkDataFrame  # noqa: E402
+from abc import abstractmethod  # noqa: E402
 
-
-class DummyPipeline(Pipeline):
+class BronzeToSilverPipeline(Pipeline):
     INPUT_DATA_LOADER = "spark_s3"
     OUTPUT_DATA_LOADER = "spark_s3"
     INPUT_LAYER = "bronze"
@@ -34,7 +34,7 @@ class DummyPipeline(Pipeline):
         """
         logger.info("Reading data from datalake.")
         source_df = self.input_loader.read(
-            self.datalake[self.INPUT_LAYER]["balances"],
+            self.datalake[self.INPUT_LAYER][self.INPUT_KEY],
             {
                 "partition_id": self.partition_id,
             },
@@ -50,10 +50,11 @@ class DummyPipeline(Pipeline):
         logger.info("Writing data to datalake.")
         self.output_loader.write(
             transformed_df,
-            self.datalake[self.OUTPUT_LAYER]["balances"],
+            self.datalake[self.OUTPUT_LAYER][self.OUTPUT_KEY],
             {"partition_id": self.partition_id},
         )
 
+    @abstractmethod
     def transform(self, source_df: SparkDataFrame) -> SparkDataFrame:
         """
         Transforms the data.
@@ -61,16 +62,14 @@ class DummyPipeline(Pipeline):
         :param source_df: The data to transform.
         :return: The transformed data.
         """
-        logger.info("Transforming data.")
-        transformed_df = source_df
-        return transformed_df
+        raise NotImplementedError("Transform method not implemented!")
+        
 
     def run(self):
         """
         Runs the pipeline.
         """
-        logger.info("Running the dummy pipeline...")
+        logger.info("Running the bronze to silver pipeline...")
         source_df = self.read_sources()
         transformed_df = self.transform(source_df)
-        transformed_df.show(20, False)
         self.write_sources(transformed_df)

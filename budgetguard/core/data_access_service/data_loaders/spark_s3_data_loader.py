@@ -2,6 +2,9 @@ from .data_loader import DataLoader
 from ..data_connections import connect
 from loguru import logger
 from typing import Dict
+from pyspark.sql import DataFrame
+import pyspark.sql.functions as F
+import pyspark.sql.types as T
 
 
 class SparkS3DataLoader(DataLoader):
@@ -44,6 +47,25 @@ class SparkS3DataLoader(DataLoader):
             return "s3://"
         else:
             raise Exception("Unknown platform!")
+    
+    def __build_options__(self, raw_options: Dict[str, str]) -> Dict[str, str]:
+        """
+        Method for building the options.
+        """
+        options = {}
+        for key, value in raw_options.items():
+            if key == "basePath":
+                options[key] = self.__build_base_path__(value)
+            else:
+                options[key] = value
+        return options
+
+    def __build_base_path__(self, raw_base_path: str) -> str:
+        """
+        Method for building the base path.
+        """
+        bucket_prefix = self.__get_bucket_prefix__()
+        return "{0}{1}".format(bucket_prefix, raw_base_path)
 
     def read(
         self, datalake_config: Dict[str, str], partition_config: Dict[str, str]
@@ -53,7 +75,7 @@ class SparkS3DataLoader(DataLoader):
         """
         file_path = self.__build_file_path__(datalake_config, partition_config)
         logger.info("Reading data from path: {0}".format(file_path))
-        options = datalake_config.get("options", {})
+        options = self.__build_options__(datalake_config.get("options", {}))
         schema = datalake_config.get("spark_schema", None)
         if schema:
             df = (
@@ -86,10 +108,25 @@ class SparkS3DataLoader(DataLoader):
         """
         file_path = self.__build_file_path__(datalake_config, partition_config)
         logger.info("Writing data to path: {0}".format(file_path))
-        options = datalake_config.get("options", {})
+        options = self.__build_options__(datalake_config.get("options", {}))
+        dataframe = self.__apply_schema_on_write__(
+            dataframe, datalake_config.get("spark_schema", None)
+        )
         (
             dataframe.write.format(datalake_config["file_extension"])
             .options(**options)
             .mode("overwrite")
             .save(file_path)
+        )
+
+    def __apply_schema_on_write__(self, df: DataFrame, schema: T.StructType) -> DataFrame:
+        """
+        Method for applying schema on write.
+        """
+        return df.select(
+            [
+                F.col(field.name).cast(field.dataType)
+                for field in schema.fields
+                if field.name in df.columns
+            ]
         )

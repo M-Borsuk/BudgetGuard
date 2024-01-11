@@ -1,3 +1,14 @@
 datalake_bucket: budget-guard-silver
 datalake_key: balances
 file_extension: parquet
+schema:
+  - name: balance_amount
+    type: float
+  - name: balance_currency
+    type: string
+  - name: balance_type
+    type: string
+  - name: partition_id
+    type: string
+  - name: account_id
+    type: string

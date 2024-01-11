@@ -10,10 +10,10 @@ do
 done
 
 # Build Docker image
-docker build --no-cache -t pyspark_dev -f Dockerfile_dev .
+docker build -t pyspark_dev -f Dockerfile_dev .
 
 # Run Docker container
-docker run pyspark_dev \
+docker run --rm pyspark_dev \
   --master "local[1]" \
   --conf "spark.ui.showConsoleProgress=True" \
   --conf "spark.ui.enabled=False" \

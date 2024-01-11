@@ -5,4 +5,4 @@ options:
   - name: pathGlobFilter
     value: '*.json'
   - name: basePath
-    value: s3a://budget-guard-bronze/balances/
+    value: budget-guard-bronze/balances/
