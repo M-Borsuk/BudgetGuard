@@ -8,7 +8,7 @@ sys.path.append(os.path.join(here, ".."))
 from loguru import logger  # noqa: E402
 from pyspark.sql import DataFrame as SparkDataFrame  # noqa: E402
 from .bronze_to_silver_pipeline import BronzeToSilverPipeline  # noqa: E402
-import pyspark.sql.functions as F # noqa: E402
+import pyspark.sql.functions as F  # noqa: E402
 
 
 class BronzeToSilverTransactionsPipeline(BronzeToSilverPipeline):
