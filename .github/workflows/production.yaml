@@ -51,7 +51,7 @@ jobs:
 
       - name: Update requirements.txt for release
         run: |
-          poetry export -f requirements.txt --output requirements.txt --without-hashes
+          poetry export --without-hashes --without-urls | awk '{ print $1 }' FS=';' > requirements.txt
 
       - name: Commit version bump
         run: |
