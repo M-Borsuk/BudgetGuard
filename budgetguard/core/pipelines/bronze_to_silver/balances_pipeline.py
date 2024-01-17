@@ -37,11 +37,23 @@ class BronzeToSilverBalancesPipeline(BronzeToSilverPipeline):
             for currency, rate in currency_rates.items()
         )
         transformed_df = self.convert_currencies(source_df, currency_rates_df)
-        transformed_df = transformed_df.toDF(*["amount", "currency", "type", "partition_id", "account_id", "amount_PLN"])
+        transformed_df = transformed_df.toDF(
+            *[
+                "amount",
+                "currency",
+                "type",
+                "partition_id",
+                "account_id",
+                "amount_PLN",
+            ]
+        )
         return transformed_df
 
     def convert_currencies(
-        self, source_df: SparkDataFrame, currency_rates: SparkDataFrame, base_currency: str = "PLN"
+        self,
+        source_df: SparkDataFrame,
+        currency_rates: SparkDataFrame,
+        base_currency: str = "PLN",
     ) -> SparkDataFrame:
         """
         Converts currencies.
@@ -57,7 +69,10 @@ class BronzeToSilverBalancesPipeline(BronzeToSilverPipeline):
                 source_df.balance_currency == currency_rates.currency,
                 "left",
             )
-            .withColumn(f"amount_{base_currency}", F.round(source_df.balance_amount * currency_rates.rate, 2))
+            .withColumn(
+                f"amount_{base_currency}",
+                F.round(source_df.balance_amount * currency_rates.rate, 2),
+            )
             .drop("rate", "currency")
         )
         return transformed_df
