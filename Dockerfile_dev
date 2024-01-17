@@ -4,6 +4,7 @@ FROM openjdk:${OPENJDK_VERSION}-jre-slim${DEBIAN_RELEASE}
 ARG TARGETPLATFORM
 ARG TARGETARCH
 ARG TARGETVARIANT
+ARG PYTHON_VERSION=3.8.8
 ARG SPARK_VERSION=3.2.0
 ARG SPARK_EXTRAS=
 
@@ -23,6 +24,7 @@ RUN set -ex && \
     conda config --set channel_priority false && \
     conda update conda -y --force-reinstall && \
     conda install pip && \
+    conda install -y python=${PYTHON_VERSION} && \
     conda clean -tipy && \
     echo "PATH=/opt/miniconda3/bin:\${PATH}" > /etc/profile.d/miniconda.sh && \
     pip install --no-cache pyspark[$SPARK_EXTRAS]==${SPARK_VERSION} && \
@@ -32,6 +34,7 @@ RUN set -ex && \
     curl -s -L --url "https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.1/hadoop-aws-3.3.1.jar" --output $SPARK_HOME/jars/hadoop-aws-3.3.1.jar && \
     mkdir -p $SPARK_HOME/conf && \
     echo "spark.hadoop.fs.s3.impl=org.apache.hadoop.fs.s3a.S3AFileSystem" >> $SPARK_HOME/conf/spark-defaults.conf && \
+    echo "spark.hadoop.fs.s3a.fast.upload.buffer=bytebuffer" >> $SPARK_HOME/conf/spark-defaults.conf && \
     apt-get remove -y curl bzip2 && \
     apt-get autoremove -y && \
     apt-get clean

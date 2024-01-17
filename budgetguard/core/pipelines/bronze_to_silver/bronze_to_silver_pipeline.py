@@ -49,6 +49,7 @@ class BronzeToSilverPipeline(Pipeline):
         :param transformed_df: The transformed data.
         """
         logger.info("Writing data to datalake.")
+        transformed_df.show(20, False)
         self.output_loader.write(
             transformed_df,
             self.datalake[self.OUTPUT_LAYER][self.OUTPUT_KEY],

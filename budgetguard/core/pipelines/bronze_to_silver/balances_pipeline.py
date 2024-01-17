@@ -1,12 +1,17 @@
 import sys
 import os
+from loguru import logger
+from pyspark.sql import Row, DataFrame as SparkDataFrame
+from typing import Dict, List, Union
+from datetime import datetime
+from forex_python.converter import CurrencyRates
+import pyspark.sql.functions as F
+
 
 here = os.path.dirname(__file__)
 
 sys.path.append(os.path.join(here, ".."))
 
-from loguru import logger  # noqa: E402
-from pyspark.sql import DataFrame as SparkDataFrame  # noqa: E402
 from .bronze_to_silver_pipeline import BronzeToSilverPipeline  # noqa: E402
 
 
@@ -26,5 +31,61 @@ class BronzeToSilverBalancesPipeline(BronzeToSilverPipeline):
         :return: The transformed data.
         """
         logger.info("Transforming data.")
-        transformed_df = source_df
+        currency_rates = self.__get_currency_rates__()
+        currency_rates_df = self.input_loader.spark_s3_connection.spark_session.createDataFrame(
+            Row(currency=currency, rate=rate)
+            for currency, rate in currency_rates.items()
+        )
+        transformed_df = self.convert_currencies(source_df, currency_rates_df)
+        transformed_df = transformed_df.toDF(*["amount", "currency", "type", "partition_id", "account_id", "amount_PLN"])
         return transformed_df
+
+    def convert_currencies(
+        self, source_df: SparkDataFrame, currency_rates: SparkDataFrame, base_currency: str = "PLN"
+    ) -> SparkDataFrame:
+        """
+        Converts currencies.
+
+        :param source_df: The data to transform.
+        :param currency_rates: The currency rates.
+        :return: The transformed data.
+        """
+        logger.info("Converting currencies.")
+        transformed_df = (
+            source_df.join(
+                currency_rates,
+                source_df.balance_currency == currency_rates.currency,
+                "left",
+            )
+            .withColumn(f"amount_{base_currency}", F.round(source_df.balance_amount * currency_rates.rate, 2))
+            .drop("rate", "currency")
+        )
+        return transformed_df
+
+    def __get_currency_rates__(
+        self,
+        base_currency: str = "PLN",
+        currencies: List[str] = ["EUR", "GBP", "PLN"],
+    ) -> Dict[str, Union[str, Dict[str, float]]]:
+        """
+        Returns currency rates for given currencies.
+
+        :param base_currency: The base currency.
+        :param currencies: The list of currencies to get rates for.
+        :return: The currency rates for given currencies.
+        """
+        logger.info(
+            f"Getting currency rates from {','.join(currencies)} to {base_currency}."
+        )
+        partition_id_datetime = datetime(
+            int(self.partition_id[:4]),
+            int(self.partition_id[4:6]),
+            int(self.partition_id[6:]),
+        )
+        currency_rates_object = CurrencyRates()
+        currency_rates = {}
+        for currency in currencies:
+            currency_rates[currency] = currency_rates_object.get_rate(
+                currency, base_currency, partition_id_datetime
+            )
+        return currency_rates
