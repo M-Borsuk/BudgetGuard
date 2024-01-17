@@ -26,7 +26,7 @@ class RawToBronzeLambdaStack(Stack):
         )
         ecr_image = _lambda.DockerImageCode.from_ecr(
             repository=ecr_repository,
-            tag="0.20.0",
+            tag="latest",
             cmd=[
                 "budgetguard.core.lambda_functions.raw_to_bronze.lambda_handler"  # noqa
             ],
