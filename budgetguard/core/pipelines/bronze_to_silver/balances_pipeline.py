@@ -32,7 +32,7 @@ class BronzeToSilverBalancesPipeline(BronzeToSilverPipeline):
         """
         logger.info("Transforming data.")
         currency_rates = self.__get_currency_rates__()
-        currency_rates_df = self.input_loader.spark_s3_connection.spark_session.createDataFrame(
+        currency_rates_df = self.input_loader.spark_s3_connection.spark_session.createDataFrame(  # noqa: E501
             Row(currency=currency, rate=rate)
             for currency, rate in currency_rates.items()
         )
@@ -90,7 +90,7 @@ class BronzeToSilverBalancesPipeline(BronzeToSilverPipeline):
         :return: The currency rates for given currencies.
         """
         logger.info(
-            f"Getting currency rates from {','.join(currencies)} to {base_currency}."
+            f"Getting currency rates from {','.join(currencies)} to {base_currency}."  # noqa: E501
         )
         partition_id_datetime = datetime(
             int(self.partition_id[:4]),
