@@ -1,4 +1,4 @@
-name: Build production branch CI/CD
+name: Production branch CI/CD
 
 on:
   push:
@@ -10,9 +10,9 @@ env:
   PAT: ${{ secrets.PAT }}
 
 jobs:
-  build-and-publish:
+  build:
     runs-on: ubuntu-latest
-    name: Build production branch & Create release & Push docker image to ECR [CI/CD]
+    name: Build production branch
     if: ${{ !contains(github.event.head_commit.message, '✅ Bump version from') }}
 
     steps:
@@ -34,6 +34,13 @@ jobs:
 
       - name: Run tox
         run: tox
+
+  release:
+    runs-on: ubuntu-latest
+    name: Create release
+    if: ${{ !contains(github.event.head_commit.message, '✅ Bump version from') }}
+    needs: build
+    steps:
 
       - name: Get current version and new version from VERSION file
         run: |
@@ -75,13 +82,20 @@ jobs:
           release_name: Release v${{ env.NEW_VERSION }}
           draft: false
           prerelease: false
+  
+  publish:
+    runs-on: ubuntu-latest
+    name: Publish package
+    if: ${{ !contains(github.event.head_commit.message, '✅ Bump version from') }}
+    needs: release
+    steps:
 
       - name: Configure poetry
         env:
           pypi_token: ${{ secrets.PyPI_TOKEN }}
         run: poetry config pypi-token.pypi $pypi_token
 
-      - name: Build and publish
+      - name: Publish poetry package
         run: poetry publish --build
 
       - name: Sleep for 2 minutes (waiting for PyPI to update)
