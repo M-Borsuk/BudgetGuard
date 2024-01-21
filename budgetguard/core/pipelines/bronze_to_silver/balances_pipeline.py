@@ -44,7 +44,7 @@ class BronzeToSilverBalancesPipeline(BronzeToSilverPipeline):
             ]
         )
         return transformed_df
-    
+
     def convert_currencies(
         self,
         source_df: SparkDataFrame,
@@ -72,4 +72,3 @@ class BronzeToSilverBalancesPipeline(BronzeToSilverPipeline):
             .drop("rate", "currency")
         )
         return transformed_df
-

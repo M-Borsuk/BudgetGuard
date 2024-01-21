@@ -77,7 +77,6 @@ class BronzeToSilverPipeline(Pipeline):
         source_df = self.read_sources()
         transformed_df = self.transform(source_df)
         self.write_sources(transformed_df)
-    
 
     def __get_currency_rates__(
         self,

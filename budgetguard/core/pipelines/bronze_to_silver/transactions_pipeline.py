@@ -40,9 +40,11 @@ class BronzeToSilverTransactionsPipeline(BronzeToSilverPipeline):
             Row(currency=currency, rate=rate)
             for currency, rate in currency_rates.items()
         )
-        transformed_df = self.convert_currencies(transformed_df, currency_rates_df)
+        transformed_df = self.convert_currencies(
+            transformed_df, currency_rates_df
+        )
         return transformed_df.drop("internal_transaction_id")
-    
+
     def convert_currencies(
         self,
         source_df: SparkDataFrame,
@@ -60,16 +62,23 @@ class BronzeToSilverTransactionsPipeline(BronzeToSilverPipeline):
         transformed_df = (
             source_df.join(
                 currency_rates,
-                source_df.balance_after_transaction_currency == currency_rates.currency,
+                source_df.balance_after_transaction_currency
+                == currency_rates.currency,
                 "left",
             )
             .withColumn(
                 f"balance_after_transaction_amount_{base_currency}",
-                F.round(source_df.balance_after_transaction_amount * currency_rates.rate, 2),
-            ).drop("rate", "currency")
+                F.round(
+                    source_df.balance_after_transaction_amount
+                    * currency_rates.rate,
+                    2,
+                ),
+            )
+            .drop("rate", "currency")
         )
         transformed_df = (
-            transformed_df.alias("a").join(
+            transformed_df.alias("a")
+            .join(
                 currency_rates.alias("b"),
                 F.col("a.transaction_currency") == F.col("b.currency"),
                 "left",
@@ -77,6 +86,7 @@ class BronzeToSilverTransactionsPipeline(BronzeToSilverPipeline):
             .withColumn(
                 f"transaction_amount_{base_currency}",
                 F.round(F.col("a.transaction_amount") * F.col("b.rate"), 2),
-            ).drop("rate", "currency")
+            )
+            .drop("rate", "currency")
         )
         return transformed_df
