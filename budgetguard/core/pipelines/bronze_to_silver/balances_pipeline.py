@@ -2,11 +2,7 @@ import sys
 import os
 from loguru import logger
 from pyspark.sql import Row, DataFrame as SparkDataFrame
-from typing import Dict, List, Union
-from datetime import datetime
-from forex_python.converter import CurrencyRates
 import pyspark.sql.functions as F
-
 
 here = os.path.dirname(__file__)
 
@@ -48,7 +44,7 @@ class BronzeToSilverBalancesPipeline(BronzeToSilverPipeline):
             ]
         )
         return transformed_df
-
+    
     def convert_currencies(
         self,
         source_df: SparkDataFrame,
@@ -77,30 +73,3 @@ class BronzeToSilverBalancesPipeline(BronzeToSilverPipeline):
         )
         return transformed_df
 
-    def __get_currency_rates__(
-        self,
-        base_currency: str = "PLN",
-        currencies: List[str] = ["EUR", "GBP", "PLN"],
-    ) -> Dict[str, Union[str, Dict[str, float]]]:
-        """
-        Returns currency rates for given currencies.
-
-        :param base_currency: The base currency.
-        :param currencies: The list of currencies to get rates for.
-        :return: The currency rates for given currencies.
-        """
-        logger.info(
-            f"Getting currency rates from {','.join(currencies)} to {base_currency}."  # noqa: E501
-        )
-        partition_id_datetime = datetime(
-            int(self.partition_id[:4]),
-            int(self.partition_id[4:6]),
-            int(self.partition_id[6:]),
-        )
-        currency_rates_object = CurrencyRates()
-        currency_rates = {}
-        for currency in currencies:
-            currency_rates[currency] = currency_rates_object.get_rate(
-                currency, base_currency, partition_id_datetime
-            )
-        return currency_rates
