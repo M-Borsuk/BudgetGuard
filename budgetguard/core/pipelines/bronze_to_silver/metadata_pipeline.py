@@ -1,12 +1,12 @@
 import sys
 import os
+from loguru import logger
+from pyspark.sql import DataFrame as SparkDataFrame
 
 here = os.path.dirname(__file__)
 
 sys.path.append(os.path.join(here, ".."))
 
-from loguru import logger  # noqa: E402
-from pyspark.sql import DataFrame as SparkDataFrame  # noqa: E402
 from .bronze_to_silver_pipeline import BronzeToSilverPipeline  # noqa: E402
 
 
