@@ -18,9 +18,6 @@ jobs:
     steps:
       - name: Checkout sources
         uses: actions/checkout@v2
-        with:
-          ref: ${{ github.ref }}
-          token: ${{ env.PAT }}
 
       - name: Setup Python
         uses: actions/setup-python@v2
