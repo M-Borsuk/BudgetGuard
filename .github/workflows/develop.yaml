@@ -31,10 +31,23 @@ jobs:
 
       - name: Run tox
         run: tox
-      # - name: Setup Python
-      #   uses: actions/setup-python@v2
-      #   with:
-      #     python-version: "3.8"
+
+  release:
+    runs-on: ubuntu-latest
+    name: Create release
+    if: ${{ !contains(github.event.head_commit.message, '✅ Bump version from') }}
+    needs: build
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
+          token: ${{ env.PAT }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
 
       - name: Install poetry and bump2version
         run: |
@@ -87,7 +100,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Publish package
     if: ${{ !contains(github.event.head_commit.message, '✅ Bump version from') }}
-    needs: build
+    needs: release
     steps:
       - name: Setup Python
         uses: actions/setup-python@v2
