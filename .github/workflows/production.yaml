@@ -98,6 +98,11 @@ jobs:
           release_name: Release v${{ env.NEW_VERSION }}
           draft: false
           prerelease: false
+      
+      - name: Set output variable
+        id: get_release_id
+        run: echo "::set-output name=version::$(echo ${{ env.NEW_VERSION }})"
+          
   
   publish:
     runs-on: ubuntu-latest
@@ -150,7 +155,7 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: budget-guard
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest --build-arg VERSION=${{ env.NEW_VERSION }} .
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest --build-arg VERSION=${{ needs.release.outputs.version }} .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
       - name: Build, tag, and push EMR image to Amazon ECR
@@ -158,7 +163,7 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: budget-guard-emr
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest --build-arg VERSION=${{ env.NEW_VERSION }} -f Dockerfile_emr .
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest --build-arg VERSION=${{ needs.release.outputs.version }} -f Dockerfile_emr .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
       - name: Upload emr_main.py to S3 bucket
