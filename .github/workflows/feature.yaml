@@ -26,8 +26,3 @@ jobs:
 
       - name: Run tox
         run: tox
-      
-      - name: Get current version and new version from VERSION file
-        run: |
-          RAW_OUTPUT=$(bumpversion --list patch --dry-run)
-          echo "$RAW_OUTPUT"
