@@ -8,11 +8,12 @@ class BudgetGuardECRStack(Stack):
         super().__init__(scope, id, **kwargs)
 
         # Create an ECR repository
-        self.repository = ecr.Repository(self, 
+        self.repository = ecr.Repository(
+            self,
             "BudgetGuardRepository",
             repository_name="budget-guard",
             removal_policy=RemovalPolicy.DESTROY,
-            auto_delete_images=True
+            auto_delete_images=True,
         )
 
         self.repository.add_lifecycle_rule(
@@ -20,16 +21,18 @@ class BudgetGuardECRStack(Stack):
             tag_status=ecr.TagStatus.ANY,
         )
 
+
 class BudgetGuardEMRECRStack(Stack):
     def __init__(self, scope: Construct, id: str, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
         # Create an ECR repository
-        self.repository = ecr.Repository(self, 
+        self.repository = ecr.Repository(
+            self,
             "BudgetGuardEMRRepository",
             repository_name="budget-guard-emr",
             removal_policy=RemovalPolicy.DESTROY,
-            auto_delete_images=True
+            auto_delete_images=True,
         )
 
         self.repository.add_lifecycle_rule(

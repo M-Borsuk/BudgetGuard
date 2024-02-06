@@ -11,7 +11,10 @@ from cdk_infrastructure.glue.stack import (
     GlueCrawlersStack,
 )
 from cdk_infrastructure.s3_buckets.constants import BUCKET_NAMES
-from cdk_infrastructure.ecr.budget_guard_ecr_stack import BudgetGuardECRStack, BudgetGuardEMRECRStack
+from cdk_infrastructure.ecr.budget_guard_ecr_stack import (
+    BudgetGuardECRStack,
+    BudgetGuardEMRECRStack,
+)
 from dotenv import load_dotenv
 
 load_dotenv()
