@@ -1,4 +1,4 @@
-name: Build feature branch CI/CD
+name: Feature branch CI/CD
 
 on:
   push:

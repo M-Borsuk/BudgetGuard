@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "budgetguard"
-version = "0.32.0"
+version = "0.32.6"
 description = ""
 authors = ["Mateusz Borsuk <mtszborsuk212@gmail.com>"]
 readme = "README.md"
@@ -15,6 +15,7 @@ aws-cdk-lib = "^2.91.0"
 tqdm = "^4.66.1"
 python-dotenv = "^1.0.0"
 pyyaml = "^6.0.1"
+forex-python = "^1.8"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.3.1"
