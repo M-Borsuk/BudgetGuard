@@ -1,8 +1,6 @@
 import sys
 import os
 from typing import Dict, List, Union
-from datetime import datetime
-from forex_python.converter import CurrencyRates
 from loguru import logger
 
 here = os.path.dirname(__file__)
