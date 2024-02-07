@@ -30,6 +30,7 @@ class Datalake(UserDict):
     BRONZE_LAYER_PATH = build_layer_path("bronze")
     SILVER_LAYER_PATH = build_layer_path("silver")
     GOLD_LAYER_PATH = build_layer_path("gold")
+    MASTER_LAYER_PATH = build_layer_path("master")
 
     def __read_yaml_to_dict__(self, yaml_path):
         with open(yaml_path, "r") as yaml_file:
@@ -114,12 +115,13 @@ class Datalake(UserDict):
         """
         result = {}
         for layer_name, layer_path in zip(
-            ["ingest", "bronze", "silver", "gold"],
+            ["ingest", "bronze", "silver", "gold", "master"],
             [
                 self.INGEST_LAYER_PATH,
                 self.BRONZE_LAYER_PATH,
                 self.SILVER_LAYER_PATH,
                 self.GOLD_LAYER_PATH,
+                self.MASTER_LAYER_PATH,
             ],
         ):
             result[layer_name] = {}
