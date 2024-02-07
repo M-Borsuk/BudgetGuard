@@ -1,7 +1,7 @@
 import argparse
 import sys
 import os
-from core.pipelines.pipeline import Pipeline
+from .core.pipelines.pipeline import Pipeline
 from dotenv import load_dotenv
 
 here = os.path.dirname(__file__)
@@ -35,31 +35,31 @@ def run_task(pipeline: Pipeline):
 def run(task: str, partition_id: str):
     load_dotenv()
     if task == "ingest_account_data":
-        from core.pipelines.ingest_account_data import (
+        from .core.pipelines.ingest_account_data import (
             IngestAccountData,
         )
 
         pipeline = IngestAccountData(partition_id)
     elif task == "bronze_to_silver_balances":
-        from core.pipelines.bronze_to_silver.balances_pipeline import (
+        from .core.pipelines.bronze_to_silver.balances_pipeline import (
             BronzeToSilverBalancesPipeline,
         )
 
         pipeline = BronzeToSilverBalancesPipeline(partition_id)
     elif task == "bronze_to_silver_details":
-        from core.pipelines.bronze_to_silver.details_pipeline import (
+        from .core.pipelines.bronze_to_silver.details_pipeline import (
             BronzeToSilverDetailsPipeline,
         )
 
         pipeline = BronzeToSilverDetailsPipeline(partition_id)
     elif task == "bronze_to_silver_transactions":
-        from core.pipelines.bronze_to_silver.transactions_pipeline import (
+        from .core.pipelines.bronze_to_silver.transactions_pipeline import (
             BronzeToSilverTransactionsPipeline,
         )
 
         pipeline = BronzeToSilverTransactionsPipeline(partition_id)
     elif task == "bronze_to_silver_metadata":
-        from core.pipelines.bronze_to_silver.metadata_pipeline import (
+        from .core.pipelines.bronze_to_silver.metadata_pipeline import (
             BronzeToSilverMetadataPipeline,
         )
 
