@@ -38,7 +38,9 @@ class ExchangeRatesPipeline(Pipeline):
         source_df = self.input_loader.read(self.partition_id)
         return source_df
 
-    def write_sources(self, transformed_df: List[Dict[str, Union[str, float]]]):
+    def write_sources(
+        self, transformed_df: List[Dict[str, Union[str, float]]]
+    ):
         """
         Writes the data to the data sources.
 

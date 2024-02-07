@@ -20,8 +20,10 @@ class ExchangeRatesDataLoader(DataLoader):
         Constructor for ExchangeRatesDataLoader class.
         """
         self.currency_rates = CurrencyRates()
-    
-    def read(self, partition_id: str = None, base_currency: str = "PLN") -> List[Dict[str, Union[str, float]]]:
+
+    def read(
+        self, partition_id: str = None, base_currency: str = "PLN"
+    ) -> List[Dict[str, Union[str, float]]]:
         """
         Method for reading data from the exchange rates API.
         """
@@ -33,7 +35,9 @@ class ExchangeRatesDataLoader(DataLoader):
                 int(partition_id[4:6]),
                 int(partition_id[6:]),
             )
-        currencies = self.currency_rates.get_rates(base_currency, date_obj=partition_id)
+        currencies = self.currency_rates.get_rates(
+            base_currency, date_obj=partition_id
+        )
         output = []
         for currency, rate in currencies.items():
             currency_map = {
@@ -43,7 +47,7 @@ class ExchangeRatesDataLoader(DataLoader):
             output.append(currency_map)
         logger.info("Finished reading {0} exchange rates!".format(len(output)))
         return output
-    
+
     def write(self):
         """
         Method for writing data to the exchange rates API.
