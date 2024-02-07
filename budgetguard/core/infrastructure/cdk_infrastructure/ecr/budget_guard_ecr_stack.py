@@ -19,6 +19,7 @@ class BudgetGuardECRStack(Stack):
         self.repository.add_lifecycle_rule(
             max_image_age=Duration.days(14),
             tag_status=ecr.TagStatus.ANY,
+            description="Remove old images",
         )
 
 
@@ -38,4 +39,5 @@ class BudgetGuardEMRECRStack(Stack):
         self.repository.add_lifecycle_rule(
             max_image_age=Duration.days(14),
             tag_status=ecr.TagStatus.ANY,
+            description="Remove old images",
         )
