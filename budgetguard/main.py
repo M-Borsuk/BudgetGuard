@@ -40,6 +40,12 @@ def run(task: str, partition_id: str):
         )
 
         pipeline = IngestAccountData(partition_id)
+    elif task == "master_exchange_rates":
+        from .core.pipelines.master.exchange_rates_pipelines import (
+            ExchangeRatesPipeline,
+        )
+
+        pipeline = ExchangeRatesPipeline(partition_id)
     elif task == "bronze_to_silver_balances":
         from .core.pipelines.bronze_to_silver.balances_pipeline import (
             BronzeToSilverBalancesPipeline,
