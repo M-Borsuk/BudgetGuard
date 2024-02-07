@@ -45,7 +45,7 @@ class ExchangeRatesDataLoader(DataLoader):
                 "rate": rate,
             }
             output.append(currency_map)
-        logger.info("Finished reading {0} exchange rates!".format(len(output))) 
+        logger.info("Finished reading {0} exchange rates!".format(len(output)))
         return output
 
     def write(self):
