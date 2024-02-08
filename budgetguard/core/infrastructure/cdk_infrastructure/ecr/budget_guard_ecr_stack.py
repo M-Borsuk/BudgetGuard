@@ -1,4 +1,4 @@
-from aws_cdk import Stack, Duration, RemovalPolicy
+from aws_cdk import Stack, RemovalPolicy
 from constructs import Construct
 from aws_cdk import aws_ecr as ecr
 
@@ -17,9 +17,10 @@ class BudgetGuardECRStack(Stack):
         )
 
         self.repository.add_lifecycle_rule(
-            max_image_age=Duration.days(14),
-            tag_status=ecr.TagStatus.ANY,
+            max_image_count=20,
             description="Remove old images",
+            tag_prefix_list=["dev-"],
+            rule_priority=1,
         )
 
 
@@ -37,7 +38,8 @@ class BudgetGuardEMRECRStack(Stack):
         )
 
         self.repository.add_lifecycle_rule(
-            max_image_age=Duration.days(14),
-            tag_status=ecr.TagStatus.ANY,
+            max_image_count=20,
             description="Remove old images",
+            tag_prefix_list=["dev-"],
+            rule_priority=1,
         )
