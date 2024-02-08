@@ -2,6 +2,7 @@ import sys
 import os
 from typing import Dict, List, Union
 from loguru import logger
+import json
 
 here = os.path.dirname(__file__)
 
@@ -33,11 +34,11 @@ class ExchangeRatesPipeline(Pipeline):
         :return: The data from the data sources.
         """
         logger.info("Reading data from datalake.")
-        source_df = self.input_loader.read(self.partition_id)
-        return source_df
+        source_data = self.input_loader.read(self.partition_id)
+        return source_data
 
     def write_sources(
-        self, transformed_df: List[Dict[str, Union[str, float]]]
+        self, transformed_data: List[Dict[str, Union[str, float]]]
     ):
         """
         Writes the data to the data sources.
@@ -46,7 +47,27 @@ class ExchangeRatesPipeline(Pipeline):
         """
         logger.info("Writing data to datalake.")
         self.output_loader.write(
-            transformed_df,
+            json.dumps(transformed_data),
             self.datalake[self.OUTPUT_LAYER][self.OUTPUT_KEY],
             {"partition_id": self.partition_id},
         )
+
+    def transform(
+        self, data: List[Dict[str, Union[str, float]]]
+    ) -> List[Dict[str, Union[str, float]]]:
+        """
+        Transforms the data.
+
+        :param data: The data to transform.
+        :return: The transformed data.
+        """
+        logger.info("Transforming data.")
+        return data
+
+    def run(self):
+        """
+        Runs the pipeline.
+        """
+        data = self.read_sources()
+        transformed_data = self.transform(data)
+        self.write_sources(transformed_data)

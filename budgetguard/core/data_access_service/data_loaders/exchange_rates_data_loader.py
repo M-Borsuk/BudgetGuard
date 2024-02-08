@@ -3,13 +3,13 @@ import os
 from loguru import logger
 from datetime import datetime
 from typing import Dict, List, Union
-from forex_python.converter import CurrencyRates
 
 here = os.path.dirname(__file__)
 
 sys.path.append(os.path.join(here, ".."))
 
 from .data_loader import DataLoader  # noqa: E402
+from ..data_connections import connect  # noqa: E402
 
 
 class ExchangeRatesDataLoader(DataLoader):
@@ -19,7 +19,7 @@ class ExchangeRatesDataLoader(DataLoader):
         """
         Constructor for ExchangeRatesDataLoader class.
         """
-        self.currency_rates = CurrencyRates()
+        self.currency_rates_api_connection = connect(self.NAME).connection
 
     def read(
         self, partition_id: str = None, base_currency: str = "PLN"
@@ -35,7 +35,7 @@ class ExchangeRatesDataLoader(DataLoader):
                 int(partition_id[4:6]),
                 int(partition_id[6:]),
             )
-        currencies = self.currency_rates.get_rates(
+        currencies = self.currency_rates_api_connection.get_rates(
             base_currency, date_obj=partition_id
         )
         output = []
