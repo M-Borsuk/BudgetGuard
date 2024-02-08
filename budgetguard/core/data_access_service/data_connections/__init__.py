@@ -3,6 +3,7 @@ from .connection import Connection  # noqa
 from .nordigen_connection import NordigenConnection  # noqa
 from .s3_connection import S3Connection  # noqa
 from .spark_s3_connection import SparkS3Connection  # noqa
+from .exchange_rates_api_connection import ExchangeRatesAPIConnection  # noqa
 
 
 def connect(connection_name: str) -> Connection:
@@ -21,5 +22,7 @@ def connect(connection_name: str) -> Connection:
         return NordigenConnection()
     elif connection_name == "spark_s3":
         return SparkS3Connection()
+    elif connection_name == "exchange_rates_api":
+        return ExchangeRatesAPIConnection()
     else:
         raise ValueError(f"Connection type {connection_name} not supported.")
