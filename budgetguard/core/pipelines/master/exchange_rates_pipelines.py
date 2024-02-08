@@ -50,3 +50,21 @@ class ExchangeRatesPipeline(Pipeline):
             self.datalake[self.OUTPUT_LAYER][self.OUTPUT_KEY],
             {"partition_id": self.partition_id},
         )
+    
+    def transform(self, data: List[Dict[str, Union[str, float]]]) -> List[Dict[str, Union[str, float]]]:
+        """
+        Transforms the data.
+
+        :param data: The data to transform.
+        :return: The transformed data.
+        """
+        logger.info("Transforming data.")
+        return data
+    
+    def run(self):
+        """
+        Runs the pipeline.
+        """
+        data = self.read_sources()
+        transformed_data = self.transform(data)
+        self.write_sources(transformed_data)
