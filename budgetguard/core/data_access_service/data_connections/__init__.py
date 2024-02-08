@@ -22,7 +22,7 @@ def connect(connection_name: str) -> Connection:
         return NordigenConnection()
     elif connection_name == "spark_s3":
         return SparkS3Connection()
-    elif connection_name == "exchange_rates_api":
+    elif connection_name == "exchange_rates":
         return ExchangeRatesAPIConnection()
     else:
         raise ValueError(f"Connection type {connection_name} not supported.")
