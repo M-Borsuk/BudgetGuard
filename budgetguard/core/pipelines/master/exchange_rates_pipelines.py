@@ -50,8 +50,10 @@ class ExchangeRatesPipeline(Pipeline):
             self.datalake[self.OUTPUT_LAYER][self.OUTPUT_KEY],
             {"partition_id": self.partition_id},
         )
-    
-    def transform(self, data: List[Dict[str, Union[str, float]]]) -> List[Dict[str, Union[str, float]]]:
+
+    def transform(
+        self, data: List[Dict[str, Union[str, float]]]
+    ) -> List[Dict[str, Union[str, float]]]:
         """
         Transforms the data.
 
@@ -60,7 +62,7 @@ class ExchangeRatesPipeline(Pipeline):
         """
         logger.info("Transforming data.")
         return data
-    
+
     def run(self):
         """
         Runs the pipeline.
