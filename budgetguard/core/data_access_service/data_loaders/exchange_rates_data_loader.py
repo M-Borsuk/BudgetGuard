@@ -9,10 +9,7 @@ here = os.path.dirname(__file__)
 sys.path.append(os.path.join(here, ".."))
 
 from .data_loader import DataLoader  # noqa: E402
-from ..data_connections import (
-    ExchangeRatesAPIConnection,
-    connect,
-)  # noqa: E402
+from ..data_connections import connect  # noqa: E402
 
 
 class ExchangeRatesDataLoader(DataLoader):
