@@ -1,4 +1,4 @@
-from aws_cdk import Stack, Duration, RemovalPolicy
+from aws_cdk import Stack, RemovalPolicy
 from constructs import Construct
 from aws_cdk import aws_ecr as ecr
 
