@@ -49,7 +49,9 @@ class BronzeToSilverBalancesPipeline(BronzeToSilverPipeline):
         currency_rates_df = self.read_source_exchange_rates()
         return source_df, currency_rates_df
 
-    def transform(self, source_df: SparkDataFrame, currency_rates_df: SparkDataFrame) -> SparkDataFrame:
+    def transform(
+        self, source_df: SparkDataFrame, currency_rates_df: SparkDataFrame
+    ) -> SparkDataFrame:
         """
         Transforms the data.
 
@@ -97,7 +99,7 @@ class BronzeToSilverBalancesPipeline(BronzeToSilverPipeline):
             .drop("rate", "currency")
         )
         return transformed_df
-    
+
     def run(self):
         """
         Runs the pipeline.

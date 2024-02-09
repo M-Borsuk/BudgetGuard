@@ -49,7 +49,9 @@ class BronzeToSilverTransactionsPipeline(BronzeToSilverPipeline):
         currency_rates_df = self.read_source_exchange_rates()
         return source_df, currency_rates_df
 
-    def transform(self, source_df: SparkDataFrame, currency_rates_df: SparkDataFrame) -> SparkDataFrame:
+    def transform(
+        self, source_df: SparkDataFrame, currency_rates_df: SparkDataFrame
+    ) -> SparkDataFrame:
         """
         Transforms the data.
 
@@ -94,7 +96,8 @@ class BronzeToSilverTransactionsPipeline(BronzeToSilverPipeline):
             .withColumn(
                 f"balance_after_transaction_amount_{base_currency}",
                 F.round(
-                    source_df.balance_after_transaction_amount / currency_rates.rate,
+                    source_df.balance_after_transaction_amount
+                    / currency_rates.rate,
                     2,
                 ),
             )
@@ -114,7 +117,7 @@ class BronzeToSilverTransactionsPipeline(BronzeToSilverPipeline):
             .drop("rate", "currency")
         )
         return transformed_df
-    
+
     def run(self):
         """
         Runs the pipeline.
