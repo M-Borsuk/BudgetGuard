@@ -45,6 +45,12 @@ class ExchangeRatesDataLoader(DataLoader):
                 "rate": rate,
             }
             output.append(currency_map)
+        output.append(
+            {
+                "currency": base_currency,
+                "rate": 1,
+            }
+        )
         logger.info("Finished reading {0} exchange rates!".format(len(output)))
         return output
 
