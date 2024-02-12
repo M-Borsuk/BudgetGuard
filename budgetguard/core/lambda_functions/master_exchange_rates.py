@@ -8,3 +8,4 @@ def lambda_handler(event, context):
     partition_id = event["partition_id"]
     logger.info(f"Running task: {task} for partition: {partition_id}")
     run(task, partition_id)
+    logger.info(f"Finished running task: {task} for partition: {partition_id}")
