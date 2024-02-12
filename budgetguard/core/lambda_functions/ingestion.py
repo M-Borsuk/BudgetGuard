@@ -2,6 +2,7 @@ from budgetguard.main import run
 from loguru import logger
 from datetime import datetime
 from datetime import timedelta
+from typing import List
 
 
 def lambda_handler(event, context):
@@ -10,4 +11,6 @@ def lambda_handler(event, context):
     yesterday = datetime.now() - timedelta(days=1)
     partition_id = yesterday.strftime("%Y%m%d")
     logger.info(f"Running task: {task} for partition: {partition_id}")
-    run(task, partition_id)
+    response = {"partition_id": partition_id}
+    logger.info(f"Finished running task: {task} for partition: {partition_id}")
+    return response
