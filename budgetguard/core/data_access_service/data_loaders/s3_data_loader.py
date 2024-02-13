@@ -2,6 +2,7 @@ from .data_loader import DataLoader
 from ..data_connections import connect
 from loguru import logger
 from typing import Dict
+import json
 
 
 class S3DataLoader(DataLoader):
@@ -27,6 +28,25 @@ class S3DataLoader(DataLoader):
             self.build_partition_path(partition_config),
         )
 
+    def get_all_bucket_objects(
+        self,
+        s3_client,
+        datalake_config: Dict[str, str],
+        partition_config: Dict[str, str],
+    ):
+        """
+        Method for getting all the objects in the S3 bucket.
+
+        :param s3_client: The S3 client.
+        :param datalake_config: The configuration of the datalake to read from.
+        """
+        prefix = self._build_s3_prefix(datalake_config, partition_config)
+        response = s3_client.list_objects_v2(
+            Bucket=datalake_config["datalake_bucket"],
+            Prefix=prefix,
+        )
+        return response["Contents"]
+
     def _build_s3_file_key(self, key: str, file_extension: str):
         """
         Method for building the S3 file key.
@@ -46,22 +66,21 @@ class S3DataLoader(DataLoader):
         :param datalake_key: The key of the datalake to read from.
         """
         logger.info("Reading data from S3...")
-        s3_client = self.s3_connection.get_aws_s3_client()
-        prefix = self._build_s3_prefix(datalake_config, partition_config)
-        # read all the files from the prefix
-        response = s3_client.list_objects_v2(
-            Bucket=datalake_config["datalake_bucket"],
-            Prefix=prefix,
+        s3_client = self.s3_connection.s3_client
+        contents = self.get_all_bucket_objects(
+            s3_client, datalake_config, partition_config
         )
         # read the content of each file
         output = {}
-        for file in response["Contents"]:
+        for file in contents:
             key = file["Key"]
             response = s3_client.get_object(
                 Bucket=datalake_config["datalake_bucket"],
                 Key=key,
             )
-            output[key] = response
+            json_data = response["Body"].read().decode("utf-8")
+            parsed_data = json.loads(json_data)
+            output[key] = parsed_data
         logger.info("Finished reading data from S3!")
         return output
 

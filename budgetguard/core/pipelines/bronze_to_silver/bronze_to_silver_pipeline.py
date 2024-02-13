@@ -90,8 +90,8 @@ class BronzeToSilverPipeline(Pipeline):
         :return: The currency rates for given currencies.
         """
         logger.info(
-            f"Getting currency rates from {','.join(currencies)} to {base_currency}."  # noqa: E501
-        )
+            f"Getting currency rates from {','.join(currencies)} to {base_currency}."
+        )  # noqa: E501
         partition_id_datetime = datetime(
             int(self.partition_id[:4]),
             int(self.partition_id[4:6]),
