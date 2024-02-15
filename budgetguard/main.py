@@ -32,7 +32,7 @@ def run_task(pipeline: Pipeline):
     pipeline.run()
 
 
-def run(task: str, partition_id: str):  # ignore: C901
+def run(task: str, partition_id: str):  # noqa: C901
     load_dotenv()
     if task == "ingest_account_data":
         from .core.pipelines.ingest_account_data import (
