@@ -32,6 +32,7 @@ class RawToBronzeTransactionsPipeline(RawToBronzePipeline):
         :return: The formatted transactions.
         """
         transactions_flatten = []
+        transactions = list(transactions.values())[0]
         logger.info("Flattening transactions...")
         for transaction_status, transactions_info in transactions[
             "transactions"

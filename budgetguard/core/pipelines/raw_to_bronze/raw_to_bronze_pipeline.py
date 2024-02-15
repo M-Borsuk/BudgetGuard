@@ -59,12 +59,12 @@ class RawToBronzePipeline(Pipeline):
         Writes the data to the data sources.
         """
         datalake_config = self.datalake[self.OUTPUT_LAYER][self.OUTPUT_KEY]
-        for account_id in self.account_ids:
+        for i, account_id in enumerate(self.account_ids):
             partition_config = {
                 "partition_id": self.partition_id,
                 "account_id": account_id,
             }
-            data = transformed_data[account_id]
+            data = transformed_data[i]
             self.output_loader.write(
                 json.dumps(data), datalake_config, partition_config
             )
