@@ -1,6 +1,7 @@
 import sys
 import os
 import json
+from typing import List
 
 here = os.path.dirname(__file__)
 
@@ -58,7 +59,7 @@ class IngestAccountData(Pipeline):
             "Transform method not needed for ingestion pipeline!"
         )
 
-    def run(self):
+    def run(self) -> List[str]:
         """
         Runs the pipeline.
         """
@@ -67,3 +68,4 @@ class IngestAccountData(Pipeline):
         logger.info("Writing the data to the datalake...")
         self.write_sources(nordigen_raw_data)
         logger.info("Finished running the ingestion pipeline!")
+        return self.OUTPUT_TABLES_KEYS

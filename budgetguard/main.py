@@ -32,7 +32,7 @@ def run_task(pipeline: Pipeline):
     pipeline.run()
 
 
-def run(task: str, partition_id: str):
+def run(task: str, partition_id: str):  # noqa: C901
     load_dotenv()
     if task == "ingest_account_data":
         from .core.pipelines.ingest_account_data import (
@@ -46,6 +46,30 @@ def run(task: str, partition_id: str):
         )
 
         pipeline = ExchangeRatesPipeline(partition_id)
+    elif task == "raw_to_bronze_transactions":
+        from .core.pipelines.raw_to_bronze.transactions_pipeline import (
+            RawToBronzeTransactionsPipeline,
+        )
+
+        pipeline = RawToBronzeTransactionsPipeline(partition_id)
+    elif task == "raw_to_bronze_balances":
+        from .core.pipelines.raw_to_bronze.balances_pipeline import (
+            RawToBronzeBalancesPipeline,
+        )
+
+        pipeline = RawToBronzeBalancesPipeline(partition_id)
+    elif task == "raw_to_bronze_details":
+        from .core.pipelines.raw_to_bronze.details_pipeline import (
+            RawToBronzeDetailsPipeline,
+        )
+
+        pipeline = RawToBronzeDetailsPipeline(partition_id)
+    elif task == "raw_to_bronze_metadata":
+        from .core.pipelines.raw_to_bronze.metadata_pipeline import (
+            RawToBronzeMetadataPipeline,
+        )
+
+        pipeline = RawToBronzeMetadataPipeline(partition_id)
     elif task == "bronze_to_silver_balances":
         from .core.pipelines.bronze_to_silver.balances_pipeline import (
             BronzeToSilverBalancesPipeline,

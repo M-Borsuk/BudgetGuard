@@ -11,3 +11,6 @@ def lambda_handler(event, context):
     partition_id = yesterday.strftime("%Y%m%d")
     logger.info(f"Running task: {task} for partition: {partition_id}")
     run(task, partition_id)
+    response = {"partition_id": partition_id}
+    logger.info(f"Finished running task: {task} for partition: {partition_id}")
+    return response

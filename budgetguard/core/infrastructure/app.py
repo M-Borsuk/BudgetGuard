@@ -4,6 +4,7 @@ from aws_cdk import Environment
 from cdk_infrastructure.lambdas.raw_to_bronze_stack import (
     RawToBronzeLambdaStack,
 )
+from cdk_infrastructure.lambdas.constants import RAW_TO_BRONZE_TABLE_NAMES
 from cdk_infrastructure.lambdas.ingestion_stack import IngestionLambdaStack
 from cdk_infrastructure.lambdas.master_exchange_rates_stack import (
     ExchangeRatesLambdaStack,
@@ -34,9 +35,14 @@ IngestionLambdaStack(
     app, "LambdaIngestionStack", image_name="budget-guard", env=env
 )
 
-RawToBronzeLambdaStack(
-    app, "LambdaRawToBronzeStack", image_name="budget-guard", env=env
-)
+for table_name in RAW_TO_BRONZE_TABLE_NAMES:
+    RawToBronzeLambdaStack(
+        app,
+        f"RawToBronzeLambda{table_name.title()}Stack",
+        table_name=table_name,
+        image_name="budget-guard",
+        env=env,
+    )
 
 ExchangeRatesLambdaStack(
     app,
