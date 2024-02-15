@@ -1,8 +1,6 @@
 from aws_cdk import Stack
 from aws_cdk import aws_lambda as _lambda
 from aws_cdk import aws_ecr as _ecr
-from aws_cdk import aws_s3 as _s3
-from aws_cdk import aws_s3_notifications as _s3_notifications
 from aws_cdk import aws_iam as _iam
 from aws_cdk import Aws, Duration
 from constructs import Construct
