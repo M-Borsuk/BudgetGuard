@@ -59,13 +59,3 @@ class IngestionLambdaStack(Stack):
                 effect=_iam.Effect.ALLOW,
             )
         )
-        # Rule to trigger the lambda every day at 1 AM
-        rule = _events.Rule(
-            self,
-            id="IngestionRule",
-            rule_name="IngestionRule",
-            schedule=_events.Schedule.cron(
-                minute="0", hour="1", month="*", week_day="*", year="*"
-            ),
-        )
-        rule.add_target(_events_targets.LambdaFunction(ingestion_lambda))

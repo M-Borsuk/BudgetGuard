@@ -60,13 +60,3 @@ class ExchangeRatesLambdaStack(Stack):
                 effect=_iam.Effect.ALLOW,
             )
         )
-        # Rule to trigger the lambda every day at 1 AM
-        rule = _events.Rule(
-            self,
-            id="ExchangeRatesRule",
-            rule_name="ExchangeRatesRule",
-            schedule=_events.Schedule.cron(
-                minute="0", hour="1", month="*", week_day="*", year="*"
-            ),
-        )
-        rule.add_target(_events_targets.LambdaFunction(exchange_rates_lambda))
