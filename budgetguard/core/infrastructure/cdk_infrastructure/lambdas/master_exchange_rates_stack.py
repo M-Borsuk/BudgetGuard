@@ -1,8 +1,6 @@
 from aws_cdk import Stack
 from aws_cdk import aws_lambda as _lambda
 from aws_cdk import aws_ecr as _ecr
-from aws_cdk import aws_events as _events
-from aws_cdk import aws_events_targets as _events_targets
 from aws_cdk import aws_iam as _iam
 from aws_cdk import Aws, Duration
 from constructs import Construct
