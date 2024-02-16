@@ -29,7 +29,7 @@ class ExchangeRatesLambdaStack(Stack):
             tag="latest",
             cmd=[
                 "budgetguard.core.lambda_functions.master_exchange_rates.lambda_handler"  # noqa
-            ],  # noqa
+            ],
             entrypoint=["python", "-m", "awslambdaric"],
         )
         return ecr_image
