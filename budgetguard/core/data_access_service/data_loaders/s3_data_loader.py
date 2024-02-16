@@ -70,8 +70,7 @@ class S3DataLoader(DataLoader):
         contents = self.get_all_bucket_objects(
             s3_client, datalake_config, partition_config
         )
-        # read the content of each file
-        output = {}
+        output = []
         for file in contents:
             key = file["Key"]
             response = s3_client.get_object(
@@ -80,7 +79,7 @@ class S3DataLoader(DataLoader):
             )
             json_data = response["Body"].read().decode("utf-8")
             parsed_data = json.loads(json_data)
-            output[key] = parsed_data
+            output.append((key, parsed_data))
         logger.info("Finished reading data from S3!")
         return output
 

@@ -50,10 +50,12 @@ class RawToBronzeLambdaStack(Stack):
         )
         raw_to_bronze_lambda.add_to_role_policy(
             _iam.PolicyStatement(
-                actions=["s3:GetObject", "s3:PutObject"],
+                actions=["s3:*"],
                 resources=[
                     "arn:aws:s3:::budget-guard-ingest/*",
+                    "arn:aws:s3:::budget-guard-ingest",
                     "arn:aws:s3:::budget-guard-bronze/*",
+                    "arn:aws:s3:::budget-guard-bronze",
                 ],
                 effect=_iam.Effect.ALLOW,
             )

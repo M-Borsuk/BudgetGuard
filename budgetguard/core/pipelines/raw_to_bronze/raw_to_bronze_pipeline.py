@@ -38,12 +38,15 @@ class RawToBronzePipeline(Pipeline):
         """
         logger.info("Reading data from datalake.")
         return [
-            self.input_loader.read(
-                self.datalake[self.INPUT_LAYER][self.INPUT_KEY],
-                {
-                    "partition_id": self.partition_id,
-                    "account_id": account_id,
-                },
+            (
+                account_id,
+                self.input_loader.read(
+                    self.datalake[self.INPUT_LAYER][self.INPUT_KEY],
+                    {
+                        "partition_id": self.partition_id,
+                        "account_id": account_id,
+                    },
+                ),
             )
             for account_id in self.account_ids
         ]
@@ -55,16 +58,16 @@ class RawToBronzePipeline(Pipeline):
         :param transformed_df: The transformed data.
         """
         logger.info("Writing data to datalake.")
-        """
-        Writes the data to the data sources.
-        """
         datalake_config = self.datalake[self.OUTPUT_LAYER][self.OUTPUT_KEY]
-        for account_id in self.account_ids:
+        for account_id, data in transformed_data:
+            print(account_id, data)
             partition_config = {
                 "partition_id": self.partition_id,
                 "account_id": account_id,
             }
-            data = transformed_data[account_id]
+            logger.info(
+                f"Writing data to datalake for account_id: {account_id}"
+            )
             self.output_loader.write(
                 json.dumps(data), datalake_config, partition_config
             )
@@ -89,6 +92,7 @@ class RawToBronzePipeline(Pipeline):
         source_data = self.read_sources()
         transformed_data = self.transform(source_data)
         self.write_sources(transformed_data)
+        logger.info("Bronze to silver pipeline completed.")
 
     def __get_account_ids__(self) -> List[str]:
         """

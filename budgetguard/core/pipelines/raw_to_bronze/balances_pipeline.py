@@ -22,7 +22,11 @@ class RawToBronzeBalancesPipeline(RawToBronzePipeline):
         :return: The transformed data.
         """
         logger.info("Transforming data.")
-        return [self.format_balances(data) for data in source_data]
+        return [
+            (acc_id, self.format_balances(data))
+            for acc_id, data_object in source_data
+            for key, data in data_object
+        ]
 
     def format_balances(self, balances):
         """

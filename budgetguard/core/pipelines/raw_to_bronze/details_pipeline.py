@@ -22,7 +22,11 @@ class RawToBronzeDetailsPipeline(RawToBronzePipeline):
         :return: The transformed data.
         """
         logger.info("Transforming data.")
-        return [self.format_details(data) for data in source_data]
+        return [
+            (acc_id, self.format_details(data))
+            for acc_id, data_object in source_data
+            for key, data in data_object
+        ]
 
     def format_details(self, details):
         """
