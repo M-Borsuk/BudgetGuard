@@ -26,10 +26,10 @@ class IngestionLambdaStack(Stack):
         )
         ecr_image = _lambda.DockerImageCode.from_ecr(
             repository=ecr_repository,
-            tag="latest",
+            tag_or_digest="latest",
             cmd=[
-                "budgetguard.core.lambda_functions.ingestion.lambda_handler"
-            ],  # noqa
+                "budgetguard.core.lambda_functions.ingestion.lambda_handler"  # noqa
+            ],
             entrypoint=["python", "-m", "awslambdaric"],
         )
         return ecr_image
