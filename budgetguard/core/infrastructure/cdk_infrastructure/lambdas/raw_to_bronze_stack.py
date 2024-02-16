@@ -33,8 +33,8 @@ class RawToBronzeLambdaStack(Stack):
             repository=ecr_repository,
             tag_or_digest="latest",
             cmd=[
-                f"budgetguard.core.lambda_functions.raw_to_bronze.{table_name}.lambda_handler"  # noqa
-            ],
+                f"budgetguard.core.lambda_functions.raw_to_bronze.{table_name}.lambda_handler"
+            ],  # noqa
             entrypoint=["python", "-m", "awslambdaric"],
         )
         return ecr_image

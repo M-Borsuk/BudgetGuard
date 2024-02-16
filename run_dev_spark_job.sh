@@ -8,4 +8,4 @@ docker run --rm pyspark_dev \
   --master "local[1]" \
   --conf "spark.ui.showConsoleProgress=True" \
   --conf "spark.ui.enabled=False" \
-  /job/budgetguard/main.py -t "raw_to_bronze_transactions" -pid "20240207"
+  /job/budgetguard/main.py -t "raw_to_bronze_details" -pid "20240207"
