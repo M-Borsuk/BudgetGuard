@@ -26,7 +26,7 @@ class ExchangeRatesLambdaStack(Stack):
         )
         ecr_image = _lambda.DockerImageCode.from_ecr(
             repository=ecr_repository,
-            tag="latest",
+            tag_or_digest="latest",
             cmd=[
                 "budgetguard.core.lambda_functions.master_exchange_rates.lambda_handler"  # noqa
             ],
