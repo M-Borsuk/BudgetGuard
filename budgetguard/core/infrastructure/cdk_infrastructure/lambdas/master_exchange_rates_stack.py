@@ -1,8 +1,6 @@
 from aws_cdk import Stack
 from aws_cdk import aws_lambda as _lambda
 from aws_cdk import aws_ecr as _ecr
-from aws_cdk import aws_events as _events
-from aws_cdk import aws_events_targets as _events_targets
 from aws_cdk import aws_iam as _iam
 from aws_cdk import Aws, Duration
 from constructs import Construct
@@ -55,18 +53,8 @@ class ExchangeRatesLambdaStack(Stack):
             _iam.PolicyStatement(
                 actions=["secretsmanager:GetSecretValue"],
                 resources=[
-                    "arn:aws:secretsmanager:us-east-1:327077392103:secret:budget_guard_nordigen_key-OCfS6T"  # noqa
+                    "arn:aws:secretsmanager:us-east-1:327077392103:secret:budgetguard_exchange_rates_api_backup-ahpCwz"  # noqa
                 ],
                 effect=_iam.Effect.ALLOW,
             )
         )
-        # Rule to trigger the lambda every day at 1 AM
-        rule = _events.Rule(
-            self,
-            id="ExchangeRatesRule",
-            rule_name="ExchangeRatesRule",
-            schedule=_events.Schedule.cron(
-                minute="0", hour="1", month="*", week_day="*", year="*"
-            ),
-        )
-        rule.add_target(_events_targets.LambdaFunction(exchange_rates_lambda))

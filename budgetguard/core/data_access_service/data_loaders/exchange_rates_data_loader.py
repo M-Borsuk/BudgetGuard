@@ -35,7 +35,7 @@ class ExchangeRatesDataLoader(DataLoader):
                 int(partition_id[4:6]),
                 int(partition_id[6:]),
             )
-        currencies = self.currency_rates_api_connection.get_rates(
+        currencies = self.currency_rates_api_connection.get_rates_with_backup(
             base_currency, date_obj=partition_id
         )
         output = []
