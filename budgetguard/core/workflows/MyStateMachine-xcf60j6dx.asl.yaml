@@ -151,7 +151,38 @@ States:
                     spark.executorEnv.PYSPARK_PYTHON=/usr/local/bin/python3.8
                     --conf
                     spark.hadoop.hive.metastore.client.factory.class=com.amazonaws.glue.catalog.metastore.AWSGlueDataCatalogHiveClientFactory
-            End: true
+            Next: Check job status - Balances table
+          Check job status - Balances table:
+            Next: Job status choice - Balances table
+            Type: Task
+            ResultPath: $.JobStatus
+            Resource: arn:aws:states:::aws-sdk:emrserverless:getJobRun
+            Parameters:
+              JobRunId.$: $.JobRunId
+              ApplicationId.$: $.ApplicationId
+          Job status choice - Balances table:
+            Type: Choice
+            Choices:
+              - Variable: $.JobStatus.JobRun.State
+                StringEquals: SUCCESS
+                Next: EMR job success - Balances table
+              - Or:
+                  - Variable: $.JobStatus.JobRun.State
+                    StringEquals: FAILED
+                  - Variable: $.JobStatus.JobRun.State
+                    StringEquals: CANCELLING
+                  - Variable: $.JobStatus.JobRun.State
+                    StringEquals: CANCELLED
+                Next: EMR job fail - Balances table
+            Default: EMR job in progress - Balances table
+          EMR job in progress - Balances table:
+            Type: Wait
+            Seconds: 60
+            Next: Check job status - Balances table
+          EMR job success - Balances table:
+            Type: Succeed
+          EMR job fail - Balances table:
+            Type: Fail
       - StartAt: Bronze to silver - Transactions table
         States:
           Bronze to silver - Transactions table:
@@ -179,7 +210,38 @@ States:
                     spark.executorEnv.PYSPARK_PYTHON=/usr/local/bin/python3.8
                     --conf
                     spark.hadoop.hive.metastore.client.factory.class=com.amazonaws.glue.catalog.metastore.AWSGlueDataCatalogHiveClientFactory
-            End: true
+            Next: Check job status - Transactions table
+          Check job status - Transactions table:
+            Next: Job status choice - Transactions table
+            Type: Task
+            ResultPath: $.JobStatus
+            Resource: arn:aws:states:::aws-sdk:emrserverless:getJobRun
+            Parameters:
+              JobRunId.$: $.JobRunId
+              ApplicationId.$: $.ApplicationId
+          Job status choice - Transactions table:
+            Type: Choice
+            Choices:
+              - Variable: $.JobStatus.JobRun.State
+                StringEquals: SUCCESS
+                Next: EMR job success - Transactions table
+              - Or:
+                  - Variable: $.JobStatus.JobRun.State
+                    StringEquals: FAILED
+                  - Variable: $.JobStatus.JobRun.State
+                    StringEquals: CANCELLING
+                  - Variable: $.JobStatus.JobRun.State
+                    StringEquals: CANCELLED
+                Next: EMR job fail - Transactions table
+            Default: EMR job in progress - Transactions table
+          EMR job in progress - Transactions table:
+            Type: Wait
+            Seconds: 60
+            Next: Check job status - Transactions table
+          EMR job success - Transactions table:
+            Type: Succeed
+          EMR job fail - Transactions table:
+            Type: Fail
       - StartAt: Bronze to silver - Details table
         States:
           Bronze to silver - Details table:
@@ -207,7 +269,38 @@ States:
                     spark.executorEnv.PYSPARK_PYTHON=/usr/local/bin/python3.8
                     --conf
                     spark.hadoop.hive.metastore.client.factory.class=com.amazonaws.glue.catalog.metastore.AWSGlueDataCatalogHiveClientFactory
-            End: true
+            Next: Check job status - Details table
+          Check job status - Details table:
+            Next: Job status choice - Details table
+            Type: Task
+            ResultPath: $.JobStatus
+            Resource: arn:aws:states:::aws-sdk:emrserverless:getJobRun
+            Parameters:
+              JobRunId.$: $.JobRunId
+              ApplicationId.$: $.ApplicationId
+          Job status choice - Details table:
+            Type: Choice
+            Choices:
+              - Variable: $.JobStatus.JobRun.State
+                StringEquals: SUCCESS
+                Next: EMR job success - Details table
+              - Or:
+                  - Variable: $.JobStatus.JobRun.State
+                    StringEquals: FAILED
+                  - Variable: $.JobStatus.JobRun.State
+                    StringEquals: CANCELLING
+                  - Variable: $.JobStatus.JobRun.State
+                    StringEquals: CANCELLED
+                Next: EMR job fail - Details table
+            Default: EMR job in progress - Details table
+          EMR job in progress - Details table:
+            Type: Wait
+            Seconds: 60
+            Next: Check job status - Details table
+          EMR job success - Details table:
+            Type: Succeed
+          EMR job fail - Details table:
+            Type: Fail
       - StartAt: Bronze to silver - Metadata table
         States:
           Bronze to silver - Metadata table:
@@ -235,5 +328,36 @@ States:
                     spark.executorEnv.PYSPARK_PYTHON=/usr/local/bin/python3.8
                     --conf
                     spark.hadoop.hive.metastore.client.factory.class=com.amazonaws.glue.catalog.metastore.AWSGlueDataCatalogHiveClientFactory
-            End: true
+            Next: Check job status - Metadata table
+          Check job status - Metadata table:
+            Next: Job status choice - Metadata table
+            Type: Task
+            ResultPath: $.JobStatus
+            Resource: arn:aws:states:::aws-sdk:emrserverless:getJobRun
+            Parameters:
+              JobRunId.$: $.JobRunId
+              ApplicationId.$: $.ApplicationId
+          Job status choice - Metadata table:
+            Type: Choice
+            Choices:
+              - Variable: $.JobStatus.JobRun.State
+                StringEquals: SUCCESS
+                Next: EMR job success - Metadata table
+              - Or:
+                  - Variable: $.JobStatus.JobRun.State
+                    StringEquals: FAILED
+                  - Variable: $.JobStatus.JobRun.State
+                    StringEquals: CANCELLING
+                  - Variable: $.JobStatus.JobRun.State
+                    StringEquals: CANCELLED
+                Next: EMR job fail - Metadata table
+            Default: EMR job in progress - Metadata table
+          EMR job in progress - Metadata table:
+            Type: Wait
+            Seconds: 60
+            Next: Check job status - Metadata table
+          EMR job success - Metadata table:
+            Type: Succeed
+          EMR job fail - Metadata table:
+            Type: Fail
     End: true
