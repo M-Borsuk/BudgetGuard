@@ -44,7 +44,7 @@ class ExchangeRatesAPIConnection(Connection):
                 return self.get_rates(base_cur, date_obj)
             except RatesNotAvailableError:
                 logger.warning(
-                    f"Exchange rates for {base_cur} not available. Using backup source..."
+                    f"Exchange rates for {base_cur} not available. Using backup source..."  # noqa
                 )
                 return self.get_rates_backup(base_cur, None)
 
