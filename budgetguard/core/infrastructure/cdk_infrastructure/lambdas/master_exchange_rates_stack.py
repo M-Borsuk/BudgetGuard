@@ -53,7 +53,7 @@ class ExchangeRatesLambdaStack(Stack):
             _iam.PolicyStatement(
                 actions=["secretsmanager:GetSecretValue"],
                 resources=[
-                    "arn:aws:secretsmanager:us-east-1:327077392103:secret:budget_guard_nordigen_key-OCfS6T"  # noqa
+                    "arn:aws:secretsmanager:us-east-1:327077392103:secret:budgetguard_exchange_rates_api_backup-ahpCwz"  # noqa
                 ],
                 effect=_iam.Effect.ALLOW,
             )
