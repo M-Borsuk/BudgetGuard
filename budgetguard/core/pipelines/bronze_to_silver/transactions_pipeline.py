@@ -59,6 +59,9 @@ class BronzeToSilverTransactionsPipeline(BronzeToSilverPipeline):
         :return: The transformed data.
         """
         logger.info("Transforming data.")
+        if self.df_is_empty(source_df):
+            logger.warning("No data to transform.")
+            return source_df
         transformed_df = source_df.withColumn(
             "creditor_account_iban",
             F.col("creditor_account.iban").cast("string"),
