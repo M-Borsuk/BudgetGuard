@@ -127,7 +127,9 @@ class SparkS3DataLoader(DataLoader):
         """
         for field in schema.fields:
             if field.name not in df.columns:
-                df = df.withColumn(field.name, F.lit(None).cast(field.dataType))
+                df = df.withColumn(
+                    field.name, F.lit(None).cast(field.dataType)
+                )
         return df.select(
             [
                 F.col(field.name).cast(field.dataType)

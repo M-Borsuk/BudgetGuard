@@ -75,7 +75,7 @@ class BronzeToSilverPipeline(Pipeline):
         source_df = self.read_sources()
         transformed_df = self.transform(source_df)
         self.write_sources(transformed_df)
-    
+
     def df_is_empty(self, df: SparkDataFrame) -> bool:
         """
         Checks if the dataframe is empty.
