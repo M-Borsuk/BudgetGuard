@@ -2,7 +2,6 @@ import sys
 import os
 from typing import Dict, List, Union
 from datetime import datetime
-from forex_python.converter import CurrencyRates
 from loguru import logger
 from pyspark.sql import DataFrame as SparkDataFrame
 from abc import abstractmethod
@@ -76,31 +75,14 @@ class BronzeToSilverPipeline(Pipeline):
         source_df = self.read_sources()
         transformed_df = self.transform(source_df)
         self.write_sources(transformed_df)
-
-    def __get_currency_rates__(
-        self,
-        base_currency: str = "PLN",
-        currencies: List[str] = ["EUR", "GBP", "PLN"],
-    ) -> Dict[str, Union[str, Dict[str, float]]]:
+    
+    def df_is_empty(self, df: SparkDataFrame) -> bool:
         """
-        Returns currency rates for given currencies.
+        Checks if the dataframe is empty.
 
-        :param base_currency: The base currency.
-        :param currencies: The list of currencies to get rates for.
-        :return: The currency rates for given currencies.
+        :param df: The dataframe to check.
+        :return: True if the dataframe is empty, False otherwise.
         """
-        logger.info(
-            f"Getting currency rates from {','.join(currencies)} to {base_currency}."  # noqa: E501
-        )
-        partition_id_datetime = datetime(
-            int(self.partition_id[:4]),
-            int(self.partition_id[4:6]),
-            int(self.partition_id[6:]),
-        )
-        currency_rates_object = CurrencyRates()
-        currency_rates = {}
-        for currency in currencies:
-            currency_rates[currency] = currency_rates_object.get_rate(
-                currency, base_currency, partition_id_datetime
-            )
-        return currency_rates
+        if df.isEmpty() or df.columns == ["partition_id", "account_id"]:
+            return True
+        return False
