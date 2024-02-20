@@ -17,9 +17,9 @@ class BudgetGuardECRStack(Stack):
         )
 
         self.repository.add_lifecycle_rule(
-            max_image_count=20,
+            max_image_count=10,
             description="Remove old images",
-            tag_prefix_list=["dev-"],
+            tag_wildcard="dev*",
             rule_priority=1,
         )
 
@@ -38,8 +38,8 @@ class BudgetGuardEMRECRStack(Stack):
         )
 
         self.repository.add_lifecycle_rule(
-            max_image_count=20,
+            max_image_count=10,
             description="Remove old images",
-            tag_prefix_list=["dev-"],
+            tag_wildcard="dev*",
             rule_priority=1,
         )
