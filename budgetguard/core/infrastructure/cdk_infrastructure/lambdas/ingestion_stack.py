@@ -1,4 +1,4 @@
-from aws_cdk import Stack
+from aws_cdk import Stack, Aws
 from aws_cdk import aws_lambda as _lambda
 from aws_cdk import aws_ecr as _ecr
 from aws_cdk import aws_iam as _iam
@@ -52,7 +52,7 @@ class IngestionLambdaStack(Stack):
             _iam.PolicyStatement(
                 actions=["secretsmanager:GetSecretValue"],
                 resources=[
-                    "arn:aws:secretsmanager:us-east-1:327077392103:secret:budget_guard_nordigen_key-OCfS6T"  # noqa
+                    f"arn:aws:secretsmanager:us-east-1:{Aws.ACCOUNT_ID}:secret:budget_guard_nordigen_key-OCfS6T"  # noqa
                 ],
                 effect=_iam.Effect.ALLOW,
             )
