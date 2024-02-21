@@ -68,7 +68,7 @@
     },
     "Source to ingestion - crawler in progress": {
       "Type": "Wait",
-      "Seconds": 10,
+      "Seconds": 60,
       "Next": "Source to ingestion - get crawler status"
     },
     "Source to ingestion - crawler failed": {
@@ -272,7 +272,7 @@
     },
     "Ingestion to bronze - crawler in progress": {
       "Type": "Wait",
-      "Seconds": 10,
+      "Seconds": 60,
       "Next": "Ingestion to bronze - get crawler status"
     },
     "Ingestion to bronze - crawler failed": {
@@ -644,7 +644,7 @@
     },
     "Bronze to silver - crawler in progress": {
       "Type": "Wait",
-      "Seconds": 10,
+      "Seconds": 60,
       "Next": "Bronze to silver - get crawler status"
     },
     "Bronze to silver - crawler failed": {
