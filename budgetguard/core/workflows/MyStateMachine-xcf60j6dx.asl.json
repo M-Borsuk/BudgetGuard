@@ -1,0 +1,658 @@
+{
+  "Comment": "Bronze to silver data processing pipeline",
+  "StartAt": "Source to ingestion - bank account data",
+  "States": {
+    "Source to ingestion - bank account data": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "OutputPath": "$.Payload",
+      "Parameters": {
+        "Payload.$": "$",
+        "FunctionName": "arn:aws:lambda:us-east-1:327077392103:function:IngestionLambda:$LATEST"
+      },
+      "Next": "Source to ingestion - start crawler"
+    },
+    "Source to ingestion - start crawler": {
+      "Type": "Task",
+      "Next": "Source to ingestion - get crawler status",
+      "Parameters": {
+        "Name": "budget-guard-ingest-crawler"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:glue:startCrawler",
+      "ResultPath": null
+    },
+    "Source to ingestion - get crawler status": {
+      "Type": "Task",
+      "Next": "Source to ingestion - check crawler status",
+      "Parameters": {
+        "Name": "budget-guard-ingest-crawler"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:glue:getCrawler",
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "BackoffRate": 2,
+          "IntervalSeconds": 10,
+          "MaxAttempts": 3
+        }
+      ],
+      "ResultPath": "$.InputPath"
+    },
+    "Source to ingestion - check crawler status": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.InputPath.Crawler.State",
+          "StringEquals": "FAILED",
+          "Next": "Source to ingestion - crawler failed"
+        },
+        {
+          "Variable": "$.InputPath.Crawler.State",
+          "StringEquals": "RUNNING",
+          "Next": "Source to ingestion - crawler in progress"
+        },
+        {
+          "Variable": "$.InputPath.Crawler.State",
+          "StringEquals": "STOPPING",
+          "Next": "Source to ingestion - crawler in progress"
+        },
+        {
+          "Variable": "$.InputPath.Crawler.State",
+          "StringEquals": "SUCCESS",
+          "Next": "Source to master - Exchange rates table"
+        }
+      ],
+      "Default": "Source to master - Exchange rates table"
+    },
+    "Source to ingestion - crawler in progress": {
+      "Type": "Wait",
+      "Seconds": 60,
+      "Next": "Source to ingestion - get crawler status"
+    },
+    "Source to ingestion - crawler failed": {
+      "Type": "Fail"
+    },
+    "Source to master - Exchange rates table": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "OutputPath": "$.Payload",
+      "Parameters": {
+        "Payload.$": "$",
+        "FunctionName": "arn:aws:lambda:us-east-1:327077392103:function:ExchangeRatesLambda:$LATEST"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 1,
+          "MaxAttempts": 3,
+          "BackoffRate": 2
+        }
+      ],
+      "Next": "Ingestion to bronze -  data processing pipelines"
+    },
+    "Ingestion to bronze -  data processing pipelines": {
+      "Type": "Parallel",
+      "Next": "Ingestion to bronze - start crawler",
+      "Branches": [
+        {
+          "StartAt": "Ingestion to bronze - Balances table",
+          "States": {
+            "Ingestion to bronze - Balances table": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::lambda:invoke",
+              "OutputPath": "$.Payload",
+              "Parameters": {
+                "Payload.$": "$",
+                "FunctionName": "arn:aws:lambda:us-east-1:327077392103:function:RawToBronzeLambdaBalances:$LATEST"
+              },
+              "Retry": [
+                {
+                  "ErrorEquals": [
+                    "Lambda.ServiceException",
+                    "Lambda.AWSLambdaException",
+                    "Lambda.SdkClientException",
+                    "Lambda.TooManyRequestsException"
+                  ],
+                  "IntervalSeconds": 1,
+                  "MaxAttempts": 3,
+                  "BackoffRate": 2
+                }
+              ],
+              "End": true
+            }
+          }
+        },
+        {
+          "StartAt": "Ingestion to bronze - Transactions table",
+          "States": {
+            "Ingestion to bronze - Transactions table": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::lambda:invoke",
+              "OutputPath": "$.Payload",
+              "Parameters": {
+                "Payload.$": "$",
+                "FunctionName": "arn:aws:lambda:us-east-1:327077392103:function:RawToBronzeLambdaTransactions:$LATEST"
+              },
+              "Retry": [
+                {
+                  "ErrorEquals": [
+                    "Lambda.ServiceException",
+                    "Lambda.AWSLambdaException",
+                    "Lambda.SdkClientException",
+                    "Lambda.TooManyRequestsException"
+                  ],
+                  "IntervalSeconds": 1,
+                  "MaxAttempts": 3,
+                  "BackoffRate": 2
+                }
+              ],
+              "End": true
+            }
+          }
+        },
+        {
+          "StartAt": "Ingestion to bronze - Details table",
+          "States": {
+            "Ingestion to bronze - Details table": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::lambda:invoke",
+              "OutputPath": "$.Payload",
+              "Parameters": {
+                "Payload.$": "$",
+                "FunctionName": "arn:aws:lambda:us-east-1:327077392103:function:RawToBronzeLambdaDetails:$LATEST"
+              },
+              "Retry": [
+                {
+                  "ErrorEquals": [
+                    "Lambda.ServiceException",
+                    "Lambda.AWSLambdaException",
+                    "Lambda.SdkClientException",
+                    "Lambda.TooManyRequestsException"
+                  ],
+                  "IntervalSeconds": 1,
+                  "MaxAttempts": 3,
+                  "BackoffRate": 2
+                }
+              ],
+              "End": true
+            }
+          }
+        },
+        {
+          "StartAt": "Ingestion to bronze - Metadata table",
+          "States": {
+            "Ingestion to bronze - Metadata table": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::lambda:invoke",
+              "OutputPath": "$.Payload",
+              "Parameters": {
+                "Payload.$": "$",
+                "FunctionName": "arn:aws:lambda:us-east-1:327077392103:function:RawToBronzeLambdaMetadata:$LATEST"
+              },
+              "Retry": [
+                {
+                  "ErrorEquals": [
+                    "Lambda.ServiceException",
+                    "Lambda.AWSLambdaException",
+                    "Lambda.SdkClientException",
+                    "Lambda.TooManyRequestsException"
+                  ],
+                  "IntervalSeconds": 1,
+                  "MaxAttempts": 3,
+                  "BackoffRate": 2
+                }
+              ],
+              "End": true
+            }
+          }
+        }
+      ],
+      "ResultPath": null
+    },
+    "Ingestion to bronze - start crawler": {
+      "Type": "Task",
+      "Next": "Ingestion to bronze - get crawler status",
+      "Parameters": {
+        "Name": "budget-guard-bronze-crawler"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:glue:startCrawler",
+      "ResultPath": null
+    },
+    "Ingestion to bronze - get crawler status": {
+      "Type": "Task",
+      "Next": "Ingestion to bronze - check crawler status",
+      "Parameters": {
+        "Name": "budget-guard-bronze-crawler"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:glue:getCrawler",
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "BackoffRate": 2,
+          "IntervalSeconds": 10,
+          "MaxAttempts": 3
+        }
+      ],
+      "ResultPath": "$.InputPath"
+    },
+    "Ingestion to bronze - check crawler status": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.InputPath.Crawler.State",
+          "StringEquals": "FAILED",
+          "Next": "Ingestion to bronze - crawler failed"
+        },
+        {
+          "Variable": "$.InputPath.Crawler.State",
+          "StringEquals": "RUNNING",
+          "Next": "Ingestion to bronze - crawler in progress"
+        },
+        {
+          "Variable": "$.InputPath.Crawler.State",
+          "StringEquals": "STOPPING",
+          "Next": "Ingestion to bronze - crawler in progress"
+        },
+        {
+          "Variable": "$.InputPath.Crawler.State",
+          "StringEquals": "SUCCESS",
+          "Next": "Bronze to silver - data processing pipelines"
+        }
+      ],
+      "Default": "Bronze to silver - data processing pipelines"
+    },
+    "Ingestion to bronze - crawler in progress": {
+      "Type": "Wait",
+      "Seconds": 60,
+      "Next": "Ingestion to bronze - get crawler status"
+    },
+    "Ingestion to bronze - crawler failed": {
+      "Type": "Fail"
+    },
+    "Bronze to silver - data processing pipelines": {
+      "Type": "Parallel",
+      "Branches": [
+        {
+          "StartAt": "Bronze to silver - Balances table",
+          "States": {
+            "Bronze to silver - Balances table": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::emr-serverless:startJobRun",
+              "Parameters": {
+                "ApplicationId": "00fgs1sk7tmuee09",
+                "ExecutionRoleArn": "arn:aws:iam::327077392103:role/AmazonEMR-ExecutionRole-1704146725433",
+                "Name": "bronze_to_silver_balances",
+                "Tags": {
+                  "input_layer": "bronze",
+                  "output_layer": "silver",
+                  "table": "balances"
+                },
+                "JobDriver": {
+                  "SparkSubmit": {
+                    "EntryPoint": "s3://budget-guard-main/emr_main.py",
+                    "EntryPointArguments.$": "States.Array('bronze_to_silver_balances',$.partition_id)",
+                    "SparkSubmitParameters": "--conf spark.emr-serverless.driverEnv.PYSPARK_DRIVER_PYTHON=/usr/local/bin/python3.8 --conf spark.emr-serverless.driverEnv.PYSPARK_PYTHON=/usr/local/bin/python3.8 --conf spark.executorEnv.PYSPARK_PYTHON=/usr/local/bin/python3.8 --conf spark.hadoop.hive.metastore.client.factory.class=com.amazonaws.glue.catalog.metastore.AWSGlueDataCatalogHiveClientFactory"
+                  }
+                }
+              },
+              "Next": "Check job status - Balances table"
+            },
+            "Check job status - Balances table": {
+              "Next": "Job status choice - Balances table",
+              "Type": "Task",
+              "ResultPath": "$.JobStatus",
+              "Resource": "arn:aws:states:::aws-sdk:emrserverless:getJobRun",
+              "Parameters": {
+                "JobRunId.$": "$.JobRunId",
+                "ApplicationId.$": "$.ApplicationId"
+              }
+            },
+            "Job status choice - Balances table": {
+              "Type": "Choice",
+              "Choices": [
+                {
+                  "Variable": "$.JobStatus.JobRun.State",
+                  "StringEquals": "SUCCESS",
+                  "Next": "EMR job success - Balances table"
+                },
+                {
+                  "Or": [
+                    {
+                      "Variable": "$.JobStatus.JobRun.State",
+                      "StringEquals": "FAILED"
+                    },
+                    {
+                      "Variable": "$.JobStatus.JobRun.State",
+                      "StringEquals": "CANCELLING"
+                    },
+                    {
+                      "Variable": "$.JobStatus.JobRun.State",
+                      "StringEquals": "CANCELLED"
+                    }
+                  ],
+                  "Next": "EMR job fail - Balances table"
+                }
+              ],
+              "Default": "EMR job in progress - Balances table"
+            },
+            "EMR job in progress - Balances table": {
+              "Type": "Wait",
+              "Seconds": 60,
+              "Next": "Check job status - Balances table"
+            },
+            "EMR job success - Balances table": {
+              "Type": "Succeed"
+            },
+            "EMR job fail - Balances table": {
+              "Type": "Fail"
+            }
+          }
+        },
+        {
+          "StartAt": "Bronze to silver - Transactions table",
+          "States": {
+            "Bronze to silver - Transactions table": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::emr-serverless:startJobRun",
+              "Parameters": {
+                "ApplicationId": "00fgs1sk7tmuee09",
+                "ExecutionRoleArn": "arn:aws:iam::327077392103:role/AmazonEMR-ExecutionRole-1704146725433",
+                "Name": "bronze_to_silver_transactions",
+                "Tags": {
+                  "input_layer": "bronze",
+                  "output_layer": "silver",
+                  "table": "transactions"
+                },
+                "JobDriver": {
+                  "SparkSubmit": {
+                    "EntryPoint": "s3://budget-guard-main/emr_main.py",
+                    "EntryPointArguments.$": "States.Array('bronze_to_silver_transactions',$.partition_id)",
+                    "SparkSubmitParameters": "--conf spark.emr-serverless.driverEnv.PYSPARK_DRIVER_PYTHON=/usr/local/bin/python3.8 --conf spark.emr-serverless.driverEnv.PYSPARK_PYTHON=/usr/local/bin/python3.8 --conf spark.executorEnv.PYSPARK_PYTHON=/usr/local/bin/python3.8 --conf spark.hadoop.hive.metastore.client.factory.class=com.amazonaws.glue.catalog.metastore.AWSGlueDataCatalogHiveClientFactory"
+                  }
+                }
+              },
+              "Next": "Check job status - Transactions table"
+            },
+            "Check job status - Transactions table": {
+              "Next": "Job status choice - Transactions table",
+              "Type": "Task",
+              "ResultPath": "$.JobStatus",
+              "Resource": "arn:aws:states:::aws-sdk:emrserverless:getJobRun",
+              "Parameters": {
+                "JobRunId.$": "$.JobRunId",
+                "ApplicationId.$": "$.ApplicationId"
+              }
+            },
+            "Job status choice - Transactions table": {
+              "Type": "Choice",
+              "Choices": [
+                {
+                  "Variable": "$.JobStatus.JobRun.State",
+                  "StringEquals": "SUCCESS",
+                  "Next": "EMR job success - Transactions table"
+                },
+                {
+                  "Or": [
+                    {
+                      "Variable": "$.JobStatus.JobRun.State",
+                      "StringEquals": "FAILED"
+                    },
+                    {
+                      "Variable": "$.JobStatus.JobRun.State",
+                      "StringEquals": "CANCELLING"
+                    },
+                    {
+                      "Variable": "$.JobStatus.JobRun.State",
+                      "StringEquals": "CANCELLED"
+                    }
+                  ],
+                  "Next": "EMR job fail - Transactions table"
+                }
+              ],
+              "Default": "EMR job in progress - Transactions table"
+            },
+            "EMR job in progress - Transactions table": {
+              "Type": "Wait",
+              "Seconds": 60,
+              "Next": "Check job status - Transactions table"
+            },
+            "EMR job success - Transactions table": {
+              "Type": "Succeed"
+            },
+            "EMR job fail - Transactions table": {
+              "Type": "Fail"
+            }
+          }
+        },
+        {
+          "StartAt": "Bronze to silver - Details table",
+          "States": {
+            "Bronze to silver - Details table": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::emr-serverless:startJobRun",
+              "Parameters": {
+                "ApplicationId": "00fgs1sk7tmuee09",
+                "ExecutionRoleArn": "arn:aws:iam::327077392103:role/AmazonEMR-ExecutionRole-1704146725433",
+                "Name": "bronze_to_silver_details",
+                "Tags": {
+                  "input_layer": "bronze",
+                  "output_layer": "silver",
+                  "table": "details"
+                },
+                "JobDriver": {
+                  "SparkSubmit": {
+                    "EntryPoint": "s3://budget-guard-main/emr_main.py",
+                    "EntryPointArguments.$": "States.Array('bronze_to_silver_details',$.partition_id)",
+                    "SparkSubmitParameters": "--conf spark.emr-serverless.driverEnv.PYSPARK_DRIVER_PYTHON=/usr/local/bin/python3.8 --conf spark.emr-serverless.driverEnv.PYSPARK_PYTHON=/usr/local/bin/python3.8 --conf spark.executorEnv.PYSPARK_PYTHON=/usr/local/bin/python3.8 --conf spark.hadoop.hive.metastore.client.factory.class=com.amazonaws.glue.catalog.metastore.AWSGlueDataCatalogHiveClientFactory"
+                  }
+                }
+              },
+              "Next": "Check job status - Details table"
+            },
+            "Check job status - Details table": {
+              "Next": "Job status choice - Details table",
+              "Type": "Task",
+              "ResultPath": "$.JobStatus",
+              "Resource": "arn:aws:states:::aws-sdk:emrserverless:getJobRun",
+              "Parameters": {
+                "JobRunId.$": "$.JobRunId",
+                "ApplicationId.$": "$.ApplicationId"
+              }
+            },
+            "Job status choice - Details table": {
+              "Type": "Choice",
+              "Choices": [
+                {
+                  "Variable": "$.JobStatus.JobRun.State",
+                  "StringEquals": "SUCCESS",
+                  "Next": "EMR job success - Details table"
+                },
+                {
+                  "Or": [
+                    {
+                      "Variable": "$.JobStatus.JobRun.State",
+                      "StringEquals": "FAILED"
+                    },
+                    {
+                      "Variable": "$.JobStatus.JobRun.State",
+                      "StringEquals": "CANCELLING"
+                    },
+                    {
+                      "Variable": "$.JobStatus.JobRun.State",
+                      "StringEquals": "CANCELLED"
+                    }
+                  ],
+                  "Next": "EMR job fail - Details table"
+                }
+              ],
+              "Default": "EMR job in progress - Details table"
+            },
+            "EMR job in progress - Details table": {
+              "Type": "Wait",
+              "Seconds": 60,
+              "Next": "Check job status - Details table"
+            },
+            "EMR job success - Details table": {
+              "Type": "Succeed"
+            },
+            "EMR job fail - Details table": {
+              "Type": "Fail"
+            }
+          }
+        },
+        {
+          "StartAt": "Bronze to silver - Metadata table",
+          "States": {
+            "Bronze to silver - Metadata table": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::emr-serverless:startJobRun",
+              "Parameters": {
+                "ApplicationId": "00fgs1sk7tmuee09",
+                "ExecutionRoleArn": "arn:aws:iam::327077392103:role/AmazonEMR-ExecutionRole-1704146725433",
+                "Name": "bronze_to_silver_metadata",
+                "Tags": {
+                  "input_layer": "bronze",
+                  "output_layer": "silver",
+                  "table": "metadata"
+                },
+                "JobDriver": {
+                  "SparkSubmit": {
+                    "EntryPoint": "s3://budget-guard-main/emr_main.py",
+                    "EntryPointArguments.$": "States.Array('bronze_to_silver_metadata',$.partition_id)",
+                    "SparkSubmitParameters": "--conf spark.emr-serverless.driverEnv.PYSPARK_DRIVER_PYTHON=/usr/local/bin/python3.8 --conf spark.emr-serverless.driverEnv.PYSPARK_PYTHON=/usr/local/bin/python3.8 --conf spark.executorEnv.PYSPARK_PYTHON=/usr/local/bin/python3.8 --conf spark.hadoop.hive.metastore.client.factory.class=com.amazonaws.glue.catalog.metastore.AWSGlueDataCatalogHiveClientFactory"
+                  }
+                }
+              },
+              "Next": "Check job status - Metadata table"
+            },
+            "Check job status - Metadata table": {
+              "Next": "Job status choice - Metadata table",
+              "Type": "Task",
+              "ResultPath": "$.JobStatus",
+              "Resource": "arn:aws:states:::aws-sdk:emrserverless:getJobRun",
+              "Parameters": {
+                "JobRunId.$": "$.JobRunId",
+                "ApplicationId.$": "$.ApplicationId"
+              }
+            },
+            "Job status choice - Metadata table": {
+              "Type": "Choice",
+              "Choices": [
+                {
+                  "Variable": "$.JobStatus.JobRun.State",
+                  "StringEquals": "SUCCESS",
+                  "Next": "EMR job success - Metadata table"
+                },
+                {
+                  "Or": [
+                    {
+                      "Variable": "$.JobStatus.JobRun.State",
+                      "StringEquals": "FAILED"
+                    },
+                    {
+                      "Variable": "$.JobStatus.JobRun.State",
+                      "StringEquals": "CANCELLING"
+                    },
+                    {
+                      "Variable": "$.JobStatus.JobRun.State",
+                      "StringEquals": "CANCELLED"
+                    }
+                  ],
+                  "Next": "EMR job fail - Metadata table"
+                }
+              ],
+              "Default": "EMR job in progress - Metadata table"
+            },
+            "EMR job in progress - Metadata table": {
+              "Type": "Wait",
+              "Seconds": 60,
+              "Next": "Check job status - Metadata table"
+            },
+            "EMR job success - Metadata table": {
+              "Type": "Succeed"
+            },
+            "EMR job fail - Metadata table": {
+              "Type": "Fail"
+            }
+          }
+        }
+      ],
+      "Next": "Bronze to silver - start crawler",
+      "ResultPath": null
+    },
+    "Bronze to silver - start crawler": {
+      "Type": "Task",
+      "Next": "Bronze to silver - get crawler status",
+      "Parameters": {
+        "Name": "budget-guard-silver-crawler"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:glue:startCrawler"
+    },
+    "Bronze to silver - get crawler status": {
+      "Type": "Task",
+      "Next": "Bronze to silver - check crawler status",
+      "Parameters": {
+        "Name": "budget-guard-silver-crawler"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:glue:getCrawler",
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "BackoffRate": 2,
+          "IntervalSeconds": 10,
+          "MaxAttempts": 3
+        }
+      ],
+      "ResultPath": "$.InputPath"
+    },
+    "Bronze to silver - check crawler status": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.InputPath.Crawler.State",
+          "StringEquals": "FAILED",
+          "Next": "Bronze to silver - crawler failed"
+        },
+        {
+          "Variable": "$.InputPath.Crawler.State",
+          "StringEquals": "RUNNING",
+          "Next": "Bronze to silver - crawler in progress"
+        },
+        {
+          "Variable": "$.InputPath.Crawler.State",
+          "StringEquals": "STOPPING",
+          "Next": "Bronze to silver - crawler in progress"
+        },
+        {
+          "Variable": "$.InputPath.Crawler.State",
+          "StringEquals": "SUCCESS",
+          "Next": "Budgetguard pipeline - End"
+        }
+      ],
+      "Default": "Budgetguard pipeline - End"
+    },
+    "Bronze to silver - crawler in progress": {
+      "Type": "Wait",
+      "Seconds": 60,
+      "Next": "Bronze to silver - get crawler status"
+    },
+    "Bronze to silver - crawler failed": {
+      "Type": "Fail"
+    },
+    "Budgetguard pipeline - End": {
+      "Type": "Pass",
+      "End": true
+    }
+  }
+}
