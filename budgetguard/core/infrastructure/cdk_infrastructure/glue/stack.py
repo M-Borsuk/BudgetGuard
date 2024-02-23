@@ -29,6 +29,17 @@ class GlueDataCatalogStack(Stack):
             },
         )
 
+        # Create a Silver Glue Data Catalog database
+        glue.CfnDatabase(
+            self,
+            "budget-guard-silver-database",
+            catalog_id=Aws.ACCOUNT_ID,
+            database_input={
+                "name": "budget-guard-silver-database",
+                "description": "AWS Glue Database for silver",
+            },
+        )
+
 
 class GlueCrawlersStack(Stack):
     def __init__(self, scope: Construct, id: str, **kwargs) -> None:
@@ -42,7 +53,6 @@ class GlueCrawlersStack(Stack):
             role=f"arn:aws:iam::{Aws.ACCOUNT_ID}:role/service-role/AWSGlueServiceRole",  # noqa
             database_name="budget-guard-ingest-database",
             targets={"s3Targets": [{"path": "s3://budget-guard-ingest"}]},
-            # schedule=glue.CfnCrawler.ScheduleProperty(schedule_expression="cron(0 1 * * ? *)"),  # noqa
         )
 
         # Create a Bronze Glue Crawler
@@ -53,5 +63,14 @@ class GlueCrawlersStack(Stack):
             role=f"arn:aws:iam::{Aws.ACCOUNT_ID}:role/service-role/AWSGlueServiceRole",  # noqa
             database_name="budget-guard-bronze-database",
             targets={"s3Targets": [{"path": "s3://budget-guard-bronze"}]},
-            # schedule=glue.CfnCrawler.ScheduleProperty(schedule_expression="cron(0 1 * * ? *)"),  # noqa
+        )
+
+        # Create a Silver Glue Crawler
+        glue.CfnCrawler(
+            self,
+            "budget-guard-silver-crawler",
+            name="budget-guard-silver-crawler",
+            role=f"arn:aws:iam::{Aws.ACCOUNT_ID}:role/service-role/AWSGlueServiceRole",  # noqa
+            database_name="budget-guard-silver-database",
+            targets={"s3Targets": [{"path": "s3://budget-guard-silver"}]},
         )
