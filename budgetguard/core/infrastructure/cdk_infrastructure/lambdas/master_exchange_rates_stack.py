@@ -57,3 +57,13 @@ class ExchangeRatesLambdaStack(Stack):
                 effect=_iam.Effect.ALLOW,
             )
         )
+
+        exchange_rates_lambda.add_to_role_policy(
+            _iam.PolicyStatement(
+                actions=["secretsmanager:GetSecretValue"],
+                resources=[
+                    f"arn:aws:secretsmanager:us-east-1:{Aws.ACCOUNT_ID}:secret:budgetguard_exchange_rates_api_backup-ahpCwz"  # noqa
+                ],
+                effect=_iam.Effect.ALLOW,
+            )
+        )
